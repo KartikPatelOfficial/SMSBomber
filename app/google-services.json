@@ -1,0 +1,115 @@
+{
+  "project_info": {
+    "project_number": "340474762776",
+    "firebase_url": "https://smsbomber-e784b.firebaseio.com",
+    "project_id": "smsbomber-e784b",
+    "storage_bucket": "smsbomber-e784b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:340474762776:android:92c9d6d7acfd49c4",
+        "android_client_info": {
+          "package_name": "com.kartik.spidy.smsbomber"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "340474762776-tj0cfgbrm4n136aosomj81c191vecsgg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.kartik.spidy.smsbomber",
+            "certificate_hash": "5bd75b07a08c05b3f3c1a40556351aeb60486ca3"
+          }
+        },
+        {
+          "client_id": "340474762776-m0r2bd4clgsov700dhc9ccskkf523otl.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.kartik.spidy.smsbomber",
+            "certificate_hash": "68953990207f6a1eef19887695d96e18796db654"
+          }
+        },
+        {
+          "client_id": "340474762776-8e67s8g6uek1088t52e0gqgl1slr139v.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.kartik.spidy.smsbomber",
+            "certificate_hash": "53c56450b7fc76840f07beec43ddf143c19d5ffa"
+          }
+        },
+        {
+          "client_id": "340474762776-8oup5a4ff6dgkspq06g1ojhg8rvne3mt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA0ieKwDMi2JCYkHWfCWKtjsHPQ80RHOR4"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "340474762776-8oup5a4ff6dgkspq06g1ojhg8rvne3mt.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:340474762776:android:739ad31eadbe71dd",
+        "android_client_info": {
+          "package_name": "co.deucate.smsbomber"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "340474762776-aso6bskls74l9mrcom4j5mt7v5enr9jb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "co.deucate.smsbomber",
+            "certificate_hash": "78905dd1583df0c25409ef594ff81144ca533a4d"
+          }
+        },
+        {
+          "client_id": "340474762776-8oup5a4ff6dgkspq06g1ojhg8rvne3mt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA0ieKwDMi2JCYkHWfCWKtjsHPQ80RHOR4"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "340474762776-8oup5a4ff6dgkspq06g1ojhg8rvne3mt.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

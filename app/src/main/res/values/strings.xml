@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">SMSBomber</string>
+    <string name="verify_mobile">Verify Mobile</string>
+    <string name="please_enter_your_mobile_number">Please enter your mobile number</string>
+    <string name="phone_number">Phone Number</string>
+
+    <string name="banner_bottom_ad_unit">ca-app-pub-8086732239748075/3306674486</string>
+    <string name="banner_top_ad_unit">    ca-app-pub-8086732239748075/1600331833</string>
+    <string name="start">Start</string>
+    <string name="simply_close_the_app_if_you_want_to_stop_the_bombing">Simply close the app if you want to stop the bombing.</string>
+    <string name="about">About</string>
+    <string name="website">Website</string>
+
+    ca-app-pub-8086732239748075/1600331833
+</resources>
