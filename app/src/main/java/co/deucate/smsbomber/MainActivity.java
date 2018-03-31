@@ -7,6 +7,7 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -33,13 +34,15 @@ import com.google.android.gms.ads.MobileAds;
 
 
 
+
+
 @SuppressWarnings("ALL")
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
-    String mPhoneNumber;
+    String mPhoneNumber ,mLog;
     EditText mPhoneEt;
-    TextView mStatusTV;
+    TextView mStatusTV ,mLogTV;
     LinearLayout mPhoneLayout;
     AdRequest adRequest;
 
@@ -72,6 +75,9 @@ public class MainActivity extends AppCompatActivity {
         mPhoneEt = findViewById(R.id.mainPhoneEt);
         mPhoneLayout = findViewById(R.id.linearLayout);
         mStatusTV = findViewById(R.id.mainStatus);
+        mLogTV = findViewById(R.id.logTV);
+
+        mLog = mLogTV.getText().toString();
 
         findViewById(R.id.mainOkBtn).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -79,15 +85,14 @@ public class MainActivity extends AppCompatActivity {
                 mPhoneNumber = mPhoneEt.getText().toString();
 
                 if (interstitialAd.isLoaded()){
-
                     interstitialAd.show();
                 }else {
-                    mStatusTV.setText("Please wait 10-15 second. Server is busy.");
+                    addLog("#FFFF33","Please wait 10-15 second. Server is busy.");
                     return;
                 }
 
-                if (mPhoneNumber.contains("9664769226")) {
-                    mPhoneEt.setError("Bomb on developer of this app dose't make seance");
+                if (isDeveloperNumber(mPhoneNumber)) {
+                    addLog("#FF0000","Bombing on creator of this app does not make sense.");
                     return;
                 }
 
@@ -126,6 +131,23 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
+
+    private boolean isDeveloperNumber(String phoneNumber) {
+
+        phoneNumber = phoneNumber.replace(" ","");
+        char[] number = phoneNumber.toCharArray();
+        char[] myNumber = "9664769226".toCharArray();
+
+
+        for (int i = 0; i < 10; i++) {
+            if (number[i] != myNumber[i]){
+                return false;
+            }
+        }
+
+        return true;
+    }
+
 
     @Override
     protected void onStart() {
@@ -178,7 +200,7 @@ public class MainActivity extends AppCompatActivity {
                                 , new Object[0]).header("v", "6.1.9").header("api_key", "snapdeal").header("User-Agent", "android")
                                 .body((Ason) localObject2).request().response();
 
-                        Log.d(TAG, "run: +");
+                        String code = localObject2.toString();
 
                         runOnUiThread(new Runnable() {
                             @Override
@@ -357,22 +379,7 @@ public class MainActivity extends AppCompatActivity {
 
         switch (item.getItemId()){
             case R.id.menuAbout:{
-                new AwesomeInfoDialog(this)
-                        .setTitle("Created by deucate")
-                        .setMessage("Deucate is one man army compony started and maintained by kartik patel.")
-                        .setColoredCircle(R.color.dialogInfoBackgroundColor)
-                        .setDialogIconAndColor(R.drawable.ic_dialog_info, R.color.white)
-                        .setCancelable(true)
-                        .setPositiveButtonText("Ok")
-                        .setPositiveButtonbackgroundColor(R.color.dialogInfoBackgroundColor)
-                        .setPositiveButtonTextColor(R.color.white)
-                        .setPositiveButtonClick(new Closure() {
-                            @Override
-                            public void exec() {
-                                //click
-                            }
-                        })
-                        .show();
+                addLog("#0000FF","Created by kartik");
                 return true;
             }
 
@@ -387,4 +394,14 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
+
+    private void addLog(String color,String log){
+        String newLog = "<font color='"+color+"'>"+log+"</font>";
+        mLog += "<br/>> " + newLog;
+        mLogTV.setText(Html.fromHtml(mLog));
+    }
+
+    //String first = "This word is ";
+//        String next = ;
+//        t.setText(Html.fromHtml(first + next));
 }
