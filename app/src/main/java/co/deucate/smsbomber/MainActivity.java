@@ -2,9 +2,13 @@ package co.deucate.smsbomber;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
+import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.AsyncTask;
+import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Html;
@@ -23,7 +27,6 @@ import android.widget.Toast;
 import com.afollestad.ason.Ason;
 import com.afollestad.bridge.Bridge;
 import com.afollestad.bridge.BridgeException;
-import com.awesomedialog.blennersilva.awesomedialoglibrary.AwesomeInfoDialog;
 import com.awesomedialog.blennersilva.awesomedialoglibrary.AwesomeNoticeDialog;
 import com.awesomedialog.blennersilva.awesomedialoglibrary.interfaces.Closure;
 import com.google.android.gms.ads.AdListener;
@@ -33,13 +36,11 @@ import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
 
 
-
-
-
 @SuppressWarnings("ALL")
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
+    private static final int REQUEST_CONTACT_NUMBER = 32;
     String mPhoneNumber ,mLog;
     EditText mPhoneEt;
     TextView mStatusTV ,mLogTV;
@@ -98,6 +99,14 @@ public class MainActivity extends AppCompatActivity {
 
                 new SnapdealBomb().execute();
 
+            }
+        });
+
+        findViewById(R.id.contactBtn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.CommonDataKinds.Phone.CONTENT_URI);
+                startActivityForResult(intent, REQUEST_CONTACT_NUMBER);
             }
         });
 
@@ -395,13 +404,43 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (resultCode == RESULT_OK && requestCode == REQUEST_CONTACT_NUMBER) {
+
+            Uri uri = data.getData();
+            @SuppressLint("Recycle")
+            Cursor cursor = getContentResolver().query(uri, null, null, null, null);
+            assert cursor != null;
+            cursor.moveToFirst();
+            int colum = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
+            String numberT = cursor.getString(colum);
+            String number = "";
+            if (numberT.contains("+")) {
+                numberT = numberT.substring(3);
+                number = numberT.replaceAll(" ", "");
+                mPhoneNumber = number;
+                mPhoneEt.setText(number);
+                Toast.makeText(this, mPhoneNumber, Toast.LENGTH_SHORT).show();
+            }
+
+            if (isDeveloperNumber(mPhoneNumber)) {
+                addLog("#FF0000","Bombing on creator of this app dosen't make sence. :(");
+                return;
+            }
+            mPhoneNumber = numberT;
+            mPhoneEt.setText(numberT);
+            new SnapdealBomb().execute();
+
+        }
+
+    }
+
     private void addLog(String color,String log){
         String newLog = "<font color='"+color+"'>"+log+"</font>";
         mLog += "<br/>> " + newLog;
         mLogTV.setText(Html.fromHtml(mLog));
     }
 
-    //String first = "This word is ";
-//        String next = ;
-//        t.setText(Html.fromHtml(first + next));
 }
