@@ -12,7 +12,7 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
-    lintOptions{
+    lintOptions {
         checkReleaseBuilds false;
     }
     buildTypes {

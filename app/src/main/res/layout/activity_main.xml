@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="#000"
     android:orientation="vertical"
-    tools:context="co.deucate.smsbomber.MainActivity"
+    tools:context="co.deucate.smsbomber.HomeActivity"
     tools:layout_editor_absoluteY="81dp">
 
 

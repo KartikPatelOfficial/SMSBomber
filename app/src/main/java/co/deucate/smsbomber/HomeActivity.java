@@ -36,9 +36,9 @@ import com.google.android.gms.ads.MobileAds;
 
 
 @SuppressWarnings("ALL")
-public class MainActivity extends AppCompatActivity {
+public class HomeActivity extends AppCompatActivity {
 
-    private static final String TAG = "MainActivity";
+    private static final String TAG = "HomeActivity";
     private static final int REQUEST_CONTACT_NUMBER = 32;
     String mPhoneNumber, mLog;
     EditText mPhoneEt;
@@ -140,12 +140,12 @@ public class MainActivity extends AppCompatActivity {
         interstitialAd.setAdListener(new AdListener() {
             @Override
             public void onAdLoaded() {
-                Toast.makeText(MainActivity.this, "Server up", Toast.LENGTH_SHORT).show();
+                addLog("#FFFF33","Server up");
             }
 
             @Override
             public void onAdFailedToLoad(int errorCode) {
-                Toast.makeText(MainActivity.this, "Error code : " + errorCode, Toast.LENGTH_SHORT).show();
+                addLog("#FF0000","Error : "+errorCode);
             }
 
             @Override
@@ -376,7 +376,7 @@ public class MainActivity extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            WebView webView = new WebView(MainActivity.this);
+                            WebView webView = new WebView(HomeActivity.this);
                             webView.loadUrl("https://securedapi.confirmtkt.com/api/platform/register?mobileNumber=" + mPhoneNumber);
                             webView.setWebViewClient(new WebViewClient());
                             mStatusTV.setText("ConfirmTKT");

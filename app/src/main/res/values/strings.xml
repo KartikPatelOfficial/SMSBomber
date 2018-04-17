@@ -11,6 +11,9 @@
     <string name="about">About</string>
     <string name="website">Website</string>
     <string name="contacts">Contacts</string>
+    <string name="mobile_number">Mobile Number</string>
+    <string name="text">• Only this application client cannot send sms but other application user can send.</string>
+    <string name="ok">Ok</string>
 
     ca-app-pub-8086732239748075/1600331833
 </resources>
