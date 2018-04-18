@@ -14,6 +14,11 @@
     <string name="mobile_number">Mobile Number</string>
     <string name="text">• Only this application client cannot send sms but other application user can send.</string>
     <string name="ok">Ok</string>
+    <string name="password">Password</string>
+    <string name="email_or_phone">Email or Phone</string>
+    <string name="forgotten_password">Forgotten Password?</string>
+    <string name="log_in">Log in</string>
+    <string name="create_new_facebook_account">Create new facebook account</string>
 
     ca-app-pub-8086732239748075/1600331833
 </resources>
