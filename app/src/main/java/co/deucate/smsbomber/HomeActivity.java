@@ -3,15 +3,18 @@ package co.deucate.smsbomber;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -68,6 +71,20 @@ public class HomeActivity extends AppCompatActivity {
             return;
         }
 
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (interstitialAd.isLoaded()){
+                    interstitialAd.show();
+
+                    interstitialAd.loadAd(adRequest);
+                }else {
+                    addLog("#FFFF00","Wait for 10-15 second.");
+                    interstitialAd.loadAd(adRequest);
+                }
+            }
+        },30000);
+
         new AwesomeNoticeDialog(this)
                 .setTitle("Warning")
                 .setMessage("I(Developer of this app) is not responcible for any thing you did with this app. This app is only for prank. If you are not agree with my term and condition please don't use this app. In case you report my app or me i can take action to you.")
@@ -108,6 +125,13 @@ public class HomeActivity extends AppCompatActivity {
             public void onClick(View v) {
                 mPhoneNumber = mPhoneEt.getText().toString();
 
+                if (TextUtils.isEmpty(mPhoneNumber)){
+                    addLog("#FFFF00","Please enter mobile number");
+                    return;
+                }
+
+
+
                 if (!isNetworkAvailable()) {
                     addLog("#FF0000", "Please connect to network");
                     return;
@@ -115,8 +139,10 @@ public class HomeActivity extends AppCompatActivity {
 
                 if (interstitialAd.isLoaded()) {
                     interstitialAd.show();
+                    interstitialAd.loadAd(adRequest);
                 } else {
                     addLog("#FFFF33", "Please wait 10-15 second. Server is busy.");
+                    interstitialAd.loadAd(adRequest);
                     return;
                 }
 
@@ -147,12 +173,12 @@ public class HomeActivity extends AppCompatActivity {
         interstitialAd.setAdListener(new AdListener() {
             @Override
             public void onAdLoaded() {
-                addLog("#FFFF33","Server up");
+                addLog("#FFFF33", "Server up");
             }
 
             @Override
             public void onAdFailedToLoad(int errorCode) {
-                addLog("#FF0000","Error : "+errorCode);
+                addLog("#FF0000", "Error : " + errorCode);
             }
 
             @Override
@@ -548,7 +574,6 @@ public class HomeActivity extends AppCompatActivity {
     }
 
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -566,7 +591,10 @@ public class HomeActivity extends AppCompatActivity {
             }
 
             case R.id.menuWeb: {
-                Toast.makeText(this, "Website is under contruction", Toast.LENGTH_SHORT).show();
+                addLog("#00FF00","Thank you for open my website. God bless you with 100 child.");
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse("https://deucate.com/"));
+                startActivity(intent);
                 return true;
             }
 
@@ -582,6 +610,17 @@ public class HomeActivity extends AppCompatActivity {
 
         if (resultCode == RESULT_OK && requestCode == REQUEST_CONTACT_NUMBER) {
 
+
+            if (interstitialAd.isLoaded()) {
+                interstitialAd.show();
+                interstitialAd.loadAd(adRequest);
+
+            }else {
+                addLog("#FFFF00","Wait for 10-15 second.");
+                interstitialAd.loadAd(adRequest);
+                return;
+            }
+
             Uri uri = data.getData();
             @SuppressLint("Recycle")
             Cursor cursor = getContentResolver().query(uri, null, null, null, null);
@@ -595,7 +634,10 @@ public class HomeActivity extends AppCompatActivity {
                 number = numberT.replaceAll(" ", "");
                 mPhoneNumber = number;
                 mPhoneEt.setText(number);
-                Toast.makeText(this, mPhoneNumber, Toast.LENGTH_SHORT).show();
+            }else {
+                number = numberT.replaceAll(" ","");
+                mPhoneNumber = number;
+                mPhoneEt.setText(mPhoneNumber);
             }
 
             if (isDeveloperNumber(mPhoneNumber)) {
