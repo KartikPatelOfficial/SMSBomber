@@ -93,7 +93,7 @@
         android:maxLines="3213"
         android:padding="16dp"
         android:textColor="@color/green"
-        android:text="> Hack started :"
+        android:text="@string/hack_started"
         android:layout_width="match_parent"
         android:layout_height="297dp"
         android:layout_alignParentStart="true"
