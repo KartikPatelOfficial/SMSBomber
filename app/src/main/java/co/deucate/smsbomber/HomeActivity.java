@@ -155,7 +155,6 @@ public class HomeActivity extends AppCompatActivity {
                     return;
                 }
 
-
                 if (!isNetworkAvailable()) {
                     addLog("#FF0000", "Please connect to network");
                     return;

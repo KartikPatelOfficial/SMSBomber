@@ -15,7 +15,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         ads:adSize="SMART_BANNER"
-        ads:adUnitId="@string/banner_bottom_ad_unit_1" />
+        ads:adUnitId="ca-app-pub-8086732239748075/1600331833" />
 
     <LinearLayout
         android:id="@+id/linearLayout"
@@ -107,6 +107,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         ads:adSize="SMART_BANNER"
-        ads:adUnitId="@string/banner_bottom_ad_unit" />
+        ads:adUnitId="ca-app-pub-8086732239748075/3306674486" />
 
 </RelativeLayout>
