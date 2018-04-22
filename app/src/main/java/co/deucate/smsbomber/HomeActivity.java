@@ -35,14 +35,19 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.reward.RewardItem;
+import com.google.android.gms.ads.reward.RewardedVideoAd;
+import com.google.android.gms.ads.reward.RewardedVideoAdListener;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.sql.Time;
 import java.util.HashMap;
 
 import okhttp3.Call;
@@ -53,9 +58,8 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-
 @SuppressWarnings("ALL")
-public class HomeActivity extends AppCompatActivity {
+public class HomeActivity extends AppCompatActivity implements RewardedVideoAdListener {
 
     private static final String TAG = "HomeActivity";
     private static final int REQUEST_CONTACT_NUMBER = 32;
@@ -68,8 +72,11 @@ public class HomeActivity extends AppCompatActivity {
     private InterstitialAd interstitialAd;
 
     Thread mThread;
-
+    Time cuttuntTime = null;
     int a, current, latest;
+    boolean isProt = false;
+
+    private RewardedVideoAd mRewardedVideoAd;
 
 
     @Override
@@ -81,6 +88,9 @@ public class HomeActivity extends AppCompatActivity {
             addLog("#FF0000", "Please connect to network");
             return;
         }
+
+        mRewardedVideoAd = MobileAds.getRewardedVideoAdInstance(this);
+        mRewardedVideoAd.setRewardedVideoAdListener(this);
 
         try {
             PackageInfo pInfo = this.getPackageManager().getPackageInfo(getPackageName(), 0);
@@ -127,16 +137,11 @@ public class HomeActivity extends AppCompatActivity {
         AdRequest adRequest1 = new AdRequest.Builder().build();
         adView.loadAd(adRequest1);
 
-        AdView adView1 = findViewById(R.id.mainTopBannerAd);
-        AdRequest adRequest2 = new AdRequest.Builder().build();
-        adView.loadAd(adRequest2);
-
         MobileAds.initialize(this, "ca-app-pub-8086732239748075~8890173650");
 
         interstitialAd = new InterstitialAd(this);
         interstitialAd.setAdUnitId("ca-app-pub-8086732239748075/9598708915");
         interstitialAd.loadAd(new AdRequest.Builder().build());
-
 
         mPhoneEt = findViewById(R.id.mainPhoneEt);
         mPhoneLayout = findViewById(R.id.linearLayout);
@@ -162,7 +167,6 @@ public class HomeActivity extends AppCompatActivity {
 
                 if (interstitialAd.isLoaded()) {
                     interstitialAd.show();
-                    interstitialAd.loadAd(adRequest);
                 } else {
                     addLog("#FFFF33", "Please wait 10-15 second. Server is busy.");
                     interstitialAd.loadAd(adRequest);
@@ -171,6 +175,11 @@ public class HomeActivity extends AppCompatActivity {
 
                 if (isDeveloperNumber(mPhoneNumber)) {
                     addLog("#FF0000", "Bombing on creator of this app does not make sense.");
+                    return;
+                }
+
+                if (isProtectedNumber()) {
+                    addLog("#FF0000", "This number is protected please try after some while.");
                     return;
                 }
 
@@ -223,6 +232,60 @@ public class HomeActivity extends AppCompatActivity {
         });
 
 
+    }
+
+    private boolean isProtectedNumber() {
+
+        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+        firestore.collection("Protected").document(mPhoneNumber).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                DocumentSnapshot snapshot = task.getResult();
+                if (snapshot.exists()) {
+
+                    Time time = (Time) snapshot.get("Time");
+
+
+                } else {
+                    isProt = false;
+                }
+            }
+        });
+
+        return false;
+    }
+
+    private void getCurrentTime() {
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder().url("https://us-central1-smsbomber-e784b.cloudfunctions.net/Time").build();
+
+        Call call = client.newCall(request);
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+
+                //noinspection ConstantConditions
+                String JSONData = response.body().string();
+                HashMap<String, Object> data = new HashMap<>();
+
+                try {
+                    JSONObject root = new JSONObject(JSONData);
+                    Object time = root.get("Time");
+                    cuttuntTime = (Time) time;
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });
+    }
+
+    private void loadRewardedVideoAd() {
+        mRewardedVideoAd.loadAd("ca-app-pub-8086732239748075/7406638658", new AdRequest.Builder().build());
     }
 
     private void getLatestVersion() {
@@ -280,6 +343,41 @@ public class HomeActivity extends AppCompatActivity {
         }
 
         return true;
+    }
+
+    @Override
+    public void onRewardedVideoAdLoaded() {
+        mRewardedVideoAd.show();
+    }
+
+    @Override
+    public void onRewardedVideoAdOpened() {
+
+    }
+
+    @Override
+    public void onRewardedVideoStarted() {
+
+    }
+
+    @Override
+    public void onRewardedVideoAdClosed() {
+    }
+
+    @Override
+    public void onRewarded(RewardItem rewardItem) {
+    }
+
+    @Override
+    public void onRewardedVideoAdLeftApplication() {
+    }
+
+    @Override
+    public void onRewardedVideoAdFailedToLoad(int i) {
+    }
+
+    @Override
+    public void onRewardedVideoCompleted() {
     }
 
 
@@ -460,7 +558,7 @@ public class HomeActivity extends AppCompatActivity {
         });
     }
 
-    private void updateStatus(final String s){
+    private void updateStatus(final String s) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -490,6 +588,11 @@ public class HomeActivity extends AppCompatActivity {
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setData(Uri.parse("https://deucate.com/"));
                 startActivity(intent);
+                return true;
+            }
+
+            case R.id.menuProtect: {
+                startActivity(new Intent(HomeActivity.this, ProtectedActivity.class));
                 return true;
             }
 
@@ -558,6 +661,24 @@ public class HomeActivity extends AppCompatActivity {
         String newLog = "<font color='" + color + "'>" + log + "</font>";
         mLog += "<br/>> " + newLog;
         mLogTV.setText(Html.fromHtml(mLog));
+    }
+
+    @Override
+    public void onResume() {
+        mRewardedVideoAd.resume(this);
+        super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        mRewardedVideoAd.pause(this);
+        super.onPause();
+    }
+
+    @Override
+    public void onDestroy() {
+        mRewardedVideoAd.destroy(this);
+        super.onDestroy();
     }
 
 }
