@@ -47,7 +47,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.sql.Time;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 
 import okhttp3.Call;
@@ -72,9 +74,8 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
     private InterstitialAd interstitialAd;
 
     Thread mThread;
-    Time cuttuntTime = null;
+    Date cuttuntTime = null;
     int a, current, latest;
-    boolean isProt = false;
 
     private RewardedVideoAd mRewardedVideoAd;
 
@@ -177,13 +178,8 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
                     addLog("#FF0000", "Bombing on creator of this app does not make sense.");
                     return;
                 }
-
-                if (isProtectedNumber()) {
-                    addLog("#FF0000", "This number is protected please try after some while.");
-                    return;
-                }
-
-                new Bomb().execute();
+                getCurrentTime();
+                isProtectedNumber();
 
             }
         });
@@ -234,7 +230,7 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
 
     }
 
-    private boolean isProtectedNumber() {
+    private void isProtectedNumber() {
 
         FirebaseFirestore firestore = FirebaseFirestore.getInstance();
         firestore.collection("Protected").document(mPhoneNumber).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -243,16 +239,38 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
                 DocumentSnapshot snapshot = task.getResult();
                 if (snapshot.exists()) {
 
-                    Time time = (Time) snapshot.get("Time");
+                    String timeString = snapshot.getString("Time");
+                    timeString = timeString.replace("T", " ");
+                    timeString = timeString.replace("Z", " ");
+
+                    SimpleDateFormat dateFormat2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:SS.SSS");
+
+                    try {
+                        Date temp = dateFormat2.parse(timeString);
+
+                        long difference = temp.getTime() - cuttuntTime.getTime();
+                        long days = (int) (difference / (1000 * 60 * 60 * 24));
+                        long hours = (int) ((difference - (1000 * 60 * 60 * 24 * days)) / (1000 * 60 * 60));
+                        long min = (int) (difference - (1000 * 60 * 60 * 24 * days) - (1000 * 60 * 60 * hours)) / (1000 * 60);
+                        hours = (hours < 0 ? -hours : hours);
+
+                        if (hours >= 3) {
+                            new Bomb().execute();
+                        } else {
+                            addLog("#FF0000", "This number is protected please tray again after some while.");
+                        }
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    } catch (NullPointerException e) {
+                        e.printStackTrace();
+                    }
 
 
                 } else {
-                    isProt = false;
+                    new Bomb().execute();
                 }
             }
         });
-
-        return false;
     }
 
     private void getCurrentTime() {
@@ -274,9 +292,20 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
 
                 try {
                     JSONObject root = new JSONObject(JSONData);
-                    Object time = root.get("Time");
-                    cuttuntTime = (Time) time;
+                    String timeString = root.getString("Time");
+
+                    timeString = timeString.replace("T", " ");
+                    timeString = timeString.replace("Z", " ");
+
+                    SimpleDateFormat dateFormat2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:SS.SSS");
+
+                    Date temp = dateFormat2.parse(timeString);
+
+                    cuttuntTime = temp;
+
                 } catch (JSONException e) {
+                    e.printStackTrace();
+                } catch (ParseException e) {
                     e.printStackTrace();
                 }
 

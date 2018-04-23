@@ -1,4 +1,6 @@
 apply plugin: 'com.android.application'
+apply plugin: 'io.fabric'
+
 
 android {
     compileSdkVersion 27
@@ -41,6 +43,8 @@ dependencies {
     implementation 'com.android.support:multidex:1.0.3'
     implementation 'com.squareup.okhttp3:okhttp:3.10.0'
     implementation 'com.google.android.gms:play-services-auth:15.0.0'
+    implementation 'com.crashlytics.sdk.android:crashlytics:2.9.1'
+
 
     implementation 'com.github.blennerSilva:AwesomeDialog:2.0.5'
 
