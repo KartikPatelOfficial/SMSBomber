@@ -80,19 +80,6 @@
 
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/logTV"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/linearLayout"
-        android:maxLines="3213"
-        android:padding="16dp"
-        android:scrollbars="vertical"
-        android:text="@string/hack_started"
-        android:textColor="@color/green" />
-
-
     <com.google.android.gms.ads.AdView
         android:layout_alignParentBottom="true"
         android:id="@+id/mainBottomBannerAd"
@@ -100,5 +87,14 @@
         android:layout_height="wrap_content"
         ads:adSize="SMART_BANNER"
         ads:adUnitId="ca-app-pub-8086732239748075/8334198206" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/mainRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/linearLayout"
+        android:padding="16dp" />
+
 
 </RelativeLayout>

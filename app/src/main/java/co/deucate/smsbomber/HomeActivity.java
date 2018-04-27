@@ -15,6 +15,7 @@ import android.os.Handler;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.TextUtils;
 import android.view.Menu;
@@ -66,10 +67,12 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
     private static final String TAG = "HomeActivity";
     private static final int REQUEST_CONTACT_NUMBER = 32;
     String mPhoneNumber, mLog;
+    RecyclerView mRecyclerView;
     EditText mPhoneEt;
-    TextView mStatusTV, mLogTV;
+    TextView mStatusTV;
     LinearLayout mPhoneLayout;
     AdRequest adRequest;
+
 
     private InterstitialAd interstitialAd;
 
@@ -115,7 +118,7 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
                     interstitialAd.loadAd(adRequest);
                 }
             }
-        }, 30000);
+        }, 60000);
 
         new AwesomeNoticeDialog(this)
                 .setTitle("Warning")
@@ -147,9 +150,9 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
         mPhoneEt = findViewById(R.id.mainPhoneEt);
         mPhoneLayout = findViewById(R.id.linearLayout);
         mStatusTV = findViewById(R.id.mainStatus);
-        mLogTV = findViewById(R.id.logTV);
+        mRecyclerView = findViewById(R.id.mainRecyclerView);
 
-        mLog = mLogTV.getText().toString();
+//        mLog = mLogTV.getText().toString();
 
         findViewById(R.id.mainOkBtn).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -687,9 +690,11 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
     }
 
     private void addLog(String color, String log) {
+        String oldData = log;
+
         String newLog = "<font color='" + color + "'>" + log + "</font>";
         mLog += "<br/>> " + newLog;
-        mLogTV.setText(Html.fromHtml(mLog));
+        //mLogTV.setText(Html.fromHtml(mLog));
     }
 
     @Override
