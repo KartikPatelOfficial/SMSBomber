@@ -80,6 +80,18 @@
 
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/logTV"
+        android:maxLines="3213"
+        android:padding="16dp"
+        android:textColor="@color/green"
+        android:text="@string/hack_started"
+        android:layout_width="match_parent"
+        android:layout_height="297dp"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/linearLayout"
+        android:scrollbars="vertical" />
+
     <com.google.android.gms.ads.AdView
         android:layout_alignParentBottom="true"
         android:id="@+id/mainBottomBannerAd"
