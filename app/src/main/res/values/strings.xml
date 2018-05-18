@@ -21,8 +21,19 @@
     <string name="create_new_facebook_account">Create new facebook account</string>
     <string name="banner_bottom_ad_unit_1">ca-app-pub-8086732239748075/5684932256</string>
     <string name="number">Number</string>
-    <string name="hack_started"><![CDATA[> Hack started :]]></string>
+    <string name="hack_started">> Hack started</string>
     <string name="protect">Protect</string>
-    <string name="hack_started"><![CDATA[> Hack started :]]></string>
+
+    <string name="credit">"
+         _____       _     _       _____    ___  ________
+/  ___|     (_)   | |     |  _  |  /   ||___  /  |
+\ `—. _ __  _  __| |_   _| |/' | / /| |   / /`| |
+ `—. \ '_ \| |/ _` | | | |  /| |/ /_| |  / /  | |
+/\__/ / |_) | | (_| | |_| \ |_/ /\___  |./ /  _| |_
+\____/| .__/|_|\__,_|\__, |\___/     |_/\_/   \___/
+      | |             __/ |
+      |_|            |___/
+    "</string>
+
     ca-app-pub-8086732239748075/1600331833
 </resources>

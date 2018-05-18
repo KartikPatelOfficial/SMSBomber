@@ -16,7 +16,6 @@ import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
-import android.text.Html;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -611,7 +610,7 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
 
         switch (item.getItemId()) {
             case R.id.menuAbout: {
-                addLog("#0000FF", "Created by Spidy0471");
+                addLog("#0000FF", "Created by\n"+getString(R.string.credit));
                 return true;
             }
 
@@ -690,7 +689,7 @@ public class HomeActivity extends AppCompatActivity implements RewardedVideoAdLi
     }
 
     private void addLog(String color, String log) {
-        String oldData = log;
+        String oldData = log;
 
         String newLog = "<font color='" + color + "'>" + log + "</font>";
         mLog += "<br/>> " + newLog;
