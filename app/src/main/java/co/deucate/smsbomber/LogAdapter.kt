@@ -8,7 +8,7 @@ import android.widget.TextView
 
 import java.util.ArrayList
 
-class LogAdapter(var logs: ArrayList<String>) : RecyclerView.Adapter<LogAdapter.ViewHolder>() {
+class LogAdapter(private var logs: ArrayList<String>) : RecyclerView.Adapter<LogAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LogAdapter.ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.recyclerview_text, parent, false)

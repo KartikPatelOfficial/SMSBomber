@@ -30,7 +30,6 @@ import com.google.firebase.firestore.FirebaseFirestore
 import okhttp3.*
 import org.json.JSONException
 import org.json.JSONObject
-import org.w3c.dom.Text
 import java.io.IOException
 import java.text.ParseException
 import java.text.SimpleDateFormat
@@ -50,6 +49,7 @@ class HomeActivity : AppCompatActivity() {
 
     private var interstitialAd: InterstitialAd? = null
     private lateinit var logStrings: ArrayList<String>
+    private lateinit var tempStrings:ArrayList<String>
 
     internal var currentTime: Date? = null
     internal var a: Int = 0
@@ -256,10 +256,10 @@ class HomeActivity : AppCompatActivity() {
             override fun onResponse(call: Call, response: Response) {
 
 
-                val JSONData = response.body()!!.string()
+                val jsonData = response.body()!!.string()
 
                 try {
-                    val root = JSONObject(JSONData)
+                    val root = JSONObject(jsonData)
                     var timeString = root.getString("Time")
 
                     timeString = timeString.replace("T", " ")
@@ -466,8 +466,8 @@ class HomeActivity : AppCompatActivity() {
     private fun hike() {
         val localMediaType0 = MediaType.parse("application/json; charset=utf-8")
         val localHashMap0 = HashMap<String, Any>()
-        localHashMap0.put("method", "pin")
-        localHashMap0.put("msisdn", "+91$mPhoneNumber")
+        localHashMap0["method"] = "pin"
+        localHashMap0["msisdn"] = "+91$mPhoneNumber"
         val localJSONObject121 = JSONObject(localHashMap0)
         val localOkHttpClient121 = OkHttpClient()
         val localRequestBody121 = RequestBody.create(localMediaType0, localJSONObject121.toString())
@@ -487,7 +487,7 @@ class HomeActivity : AppCompatActivity() {
     private fun mobikwick() {
         val localMediaType001 = MediaType.parse("application/json; charset=utf-8")
         val localHashMap001 = HashMap<String, Any>()
-        localHashMap001.put("cell", mPhoneNumber)
+        localHashMap001["cell"] = mPhoneNumber
         val localJSONObject001 = JSONObject(localHashMap001)
         val localOkHttpClient001 = OkHttpClient()
         val localRequestBody001 = RequestBody.create(localMediaType001, localJSONObject001.toString())
@@ -599,12 +599,14 @@ class HomeActivity : AppCompatActivity() {
     }
 
     private fun dataChange(log: String) {
-        logStrings.add(log)
+        tempStrings = logStrings
+        tempStrings.add(log)
+        logStrings = tempStrings
         mRecyclerView.adapter.notifyDataSetChanged()
     }
 
     companion object {
-        private val REQUEST_CONTACT_NUMBER = 32
+        private const val REQUEST_CONTACT_NUMBER = 32
     }
 
 }
