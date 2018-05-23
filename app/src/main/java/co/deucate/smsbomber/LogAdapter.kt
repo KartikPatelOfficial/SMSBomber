@@ -1,5 +1,6 @@
 package co.deucate.smsbomber
 
+import android.graphics.Color
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -16,8 +17,24 @@ class LogAdapter(private var logs: ArrayList<String>) : RecyclerView.Adapter<Log
     }
 
     override fun onBindViewHolder(holder: LogAdapter.ViewHolder, position: Int) {
-        val log = logs[position]
-        holder.mTextView.text = log
+        var log = logs[position]
+        val firstThree = log[0].toString()+log[1].toString()+log[2].toString()
+        var finalString = ""
+
+        if (firstThree.equals("Err")){
+            log = log.replace("Err","")
+            log = log.replace("orcode","Errorcode")
+            finalString = "> "+log
+            holder.mTextView.setTextColor(Color.RED)
+        }else if (firstThree.equals("???")){
+            log = log.replace("???","")
+            finalString = "> "+log
+            holder.mTextView.setTextColor(Color.YELLOW)
+        }else{
+            finalString = log
+        }
+
+        holder.mTextView.text = finalString
     }
 
     override fun getItemCount(): Int {
