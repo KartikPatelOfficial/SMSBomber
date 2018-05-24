@@ -63,7 +63,6 @@ class HomeActivity : AppCompatActivity() {
             return activeNetworkInfo != null && activeNetworkInfo.isConnected
         }
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
