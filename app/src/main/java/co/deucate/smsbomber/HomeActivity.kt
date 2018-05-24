@@ -68,14 +68,14 @@ class HomeActivity : AppCompatActivity() {
         mRecyclerView = findViewById(R.id.mainRecyclerView)
         mRecyclerView.layoutManager = LinearLayoutManager(this@HomeActivity)
         mRecyclerView.adapter = LogAdapter(logStrings)
-
+        mPhoneEt = findViewById(R.id.mainPhoneEt)
+        mPhoneLayout = findViewById(R.id.linearLayout)
         mStatus = findViewById(R.id.mainStatus)
 
         dataChange("> Hack Started:")
 
         if (!isNetworkAvailable) {
             dataChange("Err: Please connect to network")
-
             return
         }
 
@@ -92,13 +92,7 @@ class HomeActivity : AppCompatActivity() {
         adRequest = AdRequest.Builder().build()
 
         Handler().postDelayed({
-            if (interstitialAd!!.isLoaded) {
-                interstitialAd!!.show()
-                interstitialAd!!.loadAd(adRequest)
-            } else {
-                dataChange("??? Wait for 10-15 second.")
-                interstitialAd!!.loadAd(adRequest)
-            }
+           showAd()
         }, 60000)
 
         AwesomeNoticeDialog(this)
@@ -123,11 +117,6 @@ class HomeActivity : AppCompatActivity() {
         interstitialAd!!.adUnitId = "ca-app-pub-8086732239748075/9598708915"
         interstitialAd!!.loadAd(AdRequest.Builder().build())
 
-        mPhoneEt = findViewById(R.id.mainPhoneEt)
-        mPhoneLayout = findViewById(R.id.linearLayout)
-
-        //        mLog = mLogTV.getText().toString();
-
         findViewById<View>(R.id.mainOkBtn).setOnClickListener(View.OnClickListener {
             mPhoneNumber = mPhoneEt.text.toString()
 
@@ -140,18 +129,9 @@ class HomeActivity : AppCompatActivity() {
             if (!isNetworkAvailable) {
                 dataChange("Err: Please connect to network")
                 Toast.makeText(this@HomeActivity,"Network",Toast.LENGTH_SHORT).show()
-
                 return@OnClickListener
             }
-
-            if (interstitialAd!!.isLoaded) {
-                interstitialAd!!.show()
-            } else {
-                Toast.makeText(this@HomeActivity,"AdPro",Toast.LENGTH_SHORT).show()
-                dataChange("??? Please wait 10-15 second. Server is busy.")
-                interstitialAd!!.loadAd(adRequest)
-                return@OnClickListener
-            }
+            showAd()
 
             if (isDeveloperNumber(mPhoneNumber)) {
                 dataChange("Err: Bombing on creator of this app does not make sense.")
@@ -182,14 +162,8 @@ class HomeActivity : AppCompatActivity() {
                 interstitialAd!!.loadAd(adRequest)
             }
 
-            override fun onAdOpened() {
-                // Code to be executed when the ad is displayed.
-
-            }
-
-            override fun onAdLeftApplication() {
-                // Code to be executed when the user has left the app.
-            }
+            override fun onAdOpened() {}
+            override fun onAdLeftApplication() {}
 
             override fun onAdClosed() {
                 interstitialAd!!.loadAd(adRequest)
@@ -210,7 +184,6 @@ class HomeActivity : AppCompatActivity() {
                 var timeString = snapshot.getString("Time")
                 timeString = timeString!!.replace("T", " ")
                 timeString = timeString.replace("Z", " ")
-
                 val dateFormat2 = SimpleDateFormat("yyyy-MM-dd HH:mm:SS.SSS")
 
                 try {
@@ -262,9 +235,7 @@ class HomeActivity : AppCompatActivity() {
                     timeString = timeString.replace("Z", " ")
 
                     val dateFormat2 = SimpleDateFormat("yyyy-MM-dd HH:mm:SS.SSS")
-
                     val temp = dateFormat2.parse(timeString)
-
                     currentTime = temp
 
                 } catch (e: JSONException) {
@@ -373,16 +344,7 @@ class HomeActivity : AppCompatActivity() {
 
         if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_CONTACT_NUMBER) {
 
-
-            if (interstitialAd!!.isLoaded) {
-                interstitialAd!!.show()
-                interstitialAd!!.loadAd(adRequest)
-
-            } else {
-                dataChange("Wait for 10-15 second.")
-                interstitialAd!!.loadAd(adRequest)
-                return
-            }
+            showAd()
 
             val uri = data.data
             @SuppressLint("Recycle")
@@ -411,6 +373,18 @@ class HomeActivity : AppCompatActivity() {
             DataHalper(mPhoneNumber).flipkart()
         }
 
+    }
+
+    private fun showAd(){
+        if (interstitialAd!!.isLoaded) {
+            interstitialAd!!.show()
+            interstitialAd!!.loadAd(adRequest)
+
+        } else {
+            dataChange("??? Wait for 10-15 second.")
+            interstitialAd!!.loadAd(adRequest)
+            return
+        }
     }
 
     fun dataChange(log: String) {

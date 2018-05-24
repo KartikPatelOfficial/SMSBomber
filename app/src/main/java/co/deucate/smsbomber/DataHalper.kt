@@ -1,8 +1,5 @@
 package co.deucate.smsbomber
 
-import android.content.Context
-import android.webkit.WebView
-import android.webkit.WebViewClient
 import okhttp3.*
 import org.json.JSONObject
 import java.io.IOException
@@ -154,16 +151,10 @@ class DataHalper(val mPhoneNumber:String){
     }
 
     private fun confirmTKT() {
-
         val client = OkHttpClient()
-
-        val request = Request.Builder()
-                .url("https://securedapi.confirmtkt.com/api/platform/register?mobileNumber=$mPhoneNumber")
-                .build()
-
+        val request = Request.Builder().url("https://securedapi.confirmtkt.com/api/platform/register?mobileNumber=$mPhoneNumber").build()
         val call = client.newCall(request)
         call.enqueue(object : Callback {
-
             override fun onFailure(call: Call?, e: IOException?) {
                 HomeActivity().dataChange("Err: "+e!!.localizedMessage)
                 flipkart()
