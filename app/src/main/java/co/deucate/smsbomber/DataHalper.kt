@@ -5,7 +5,7 @@ import org.json.JSONObject
 import java.io.IOException
 import java.util.HashMap
 
-class DataHalper(val mPhoneNumber:String){
+class DataHalper(private val mPhoneNumber:String){
 
     fun flipkart() {
         val localOkHttpClient = OkHttpClient()

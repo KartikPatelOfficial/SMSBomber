@@ -19,19 +19,21 @@ class LogAdapter(private var logs: ArrayList<String>) : RecyclerView.Adapter<Log
     override fun onBindViewHolder(holder: LogAdapter.ViewHolder, position: Int) {
         var log = logs[position]
         val firstThree = log[0].toString()+log[1].toString()+log[2].toString()
-        var finalString = ""
+        val finalString: String
 
-        if (firstThree.equals("Err")){
-            log = log.replace("Err","")
-            log = log.replace("orcode","Errorcode")
-            finalString = "> "+log
-            holder.mTextView.setTextColor(Color.RED)
-        }else if (firstThree.equals("???")){
-            log = log.replace("???","")
-            finalString = "> "+log
-            holder.mTextView.setTextColor(Color.YELLOW)
-        }else{
-            finalString = log
+        when (firstThree) {
+            "Err" -> {
+                log = log.replace("Err","")
+                log = log.replace("orcode","Errorcode")
+                finalString = "> $log"
+                holder.mTextView.setTextColor(Color.RED)
+            }
+            "???" -> {
+                log = log.replace("???","")
+                finalString = "> $log"
+                holder.mTextView.setTextColor(Color.YELLOW)
+            }
+            else -> finalString = log
         }
 
         holder.mTextView.text = finalString
