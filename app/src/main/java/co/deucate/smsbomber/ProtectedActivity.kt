@@ -3,19 +3,13 @@ package co.deucate.smsbomber
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.AdView
-import com.google.android.gms.ads.MobileAds
-import com.google.android.gms.ads.reward.RewardItem
-import com.google.android.gms.ads.reward.RewardedVideoAd
-import com.google.android.gms.ads.reward.RewardedVideoAdListener
 import com.google.firebase.firestore.FirebaseFirestore
 
 import org.json.JSONException
@@ -30,33 +24,18 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 
-class ProtectedActivity : AppCompatActivity(), RewardedVideoAdListener {
+class ProtectedActivity : AppCompatActivity() {
 
     private lateinit var mEditText: EditText
     private lateinit var mButton: Button
     private lateinit var mNumber: String
 
-    private var mRewardedVideoAd: RewardedVideoAd? = null
 
     private var isError = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_protected)
-
-        val mAdView = findViewById<AdView>(R.id.protectedAdView)
-        val adRequest = AdRequest.Builder().build()
-        mAdView.loadAd(adRequest)
-
-        val mAdView1 = findViewById<AdView>(R.id.protectedAdViewLarge)
-        val adRequest1 = AdRequest.Builder().build()
-        mAdView1.loadAd(adRequest1)
-
-        MobileAds.initialize(this, "ca-app-pub-8086732239748075~8890173650")
-
-        mRewardedVideoAd = MobileAds.getRewardedVideoAdInstance(this)
-        mRewardedVideoAd!!.rewardedVideoAdListener = this
-        loadRewardedVideoAd()
 
         mButton = findViewById(R.id.protectNumberBtn)
         mButton.isEnabled = false
@@ -73,10 +52,6 @@ class ProtectedActivity : AppCompatActivity(), RewardedVideoAdListener {
                     e.printStackTrace()
                 }
 
-            }
-
-            if (mRewardedVideoAd!!.isLoaded) {
-                mRewardedVideoAd!!.show()
             }
         }
 
@@ -111,50 +86,6 @@ class ProtectedActivity : AppCompatActivity(), RewardedVideoAdListener {
 
     }
 
-    private fun loadRewardedVideoAd() {
-        mRewardedVideoAd!!.loadAd("ca-app-pub-8086732239748075/7406638658", AdRequest.Builder().build())
-    }
-
-    override fun onRewardedVideoAdLoaded() {
-        mButton.isEnabled = true
-
-    }
-
-    override fun onRewardedVideoAdOpened() {
-
-    }
-
-    override fun onRewardedVideoStarted() {
-
-    }
-
-    override fun onRewardedVideoAdClosed() {
-        loadRewardedVideoAd()
-    }
-
-    override fun onRewarded(rewardItem: RewardItem) {
-        try {
-            startAddNumber()
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-
-        loadRewardedVideoAd()
-    }
-
-    override fun onRewardedVideoAdLeftApplication() {
-        loadRewardedVideoAd()
-    }
-
-    override fun onRewardedVideoAdFailedToLoad(i: Int) {
-        loadRewardedVideoAd()
-        Toast.makeText(this, "Error: $i", Toast.LENGTH_SHORT).show()
-        isError = true
-    }
-
-    override fun onRewardedVideoCompleted() {
-
-    }
 
     @Throws(IOException::class)
     private fun startAddNumber() {
@@ -191,20 +122,4 @@ class ProtectedActivity : AppCompatActivity(), RewardedVideoAdListener {
 
 
     }
-
-    public override fun onResume() {
-        mRewardedVideoAd!!.resume(this)
-        super.onResume()
-    }
-
-    public override fun onPause() {
-        mRewardedVideoAd!!.pause(this)
-        super.onPause()
-    }
-
-    public override fun onDestroy() {
-        mRewardedVideoAd!!.destroy(this)
-        super.onDestroy()
-    }
-
 }

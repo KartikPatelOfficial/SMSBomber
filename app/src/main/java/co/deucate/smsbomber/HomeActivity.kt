@@ -8,11 +8,10 @@ import android.content.pm.PackageManager
 import android.net.ConnectivityManager
 import android.net.Uri
 import android.os.Bundle
-import android.os.Handler
 import android.provider.ContactsContract
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import android.text.TextUtils
 import android.view.Menu
 import android.view.MenuItem
@@ -23,7 +22,6 @@ import android.widget.TextView
 import android.widget.Toast
 import com.awesomedialog.blennersilva.awesomedialoglibrary.AwesomeErrorDialog
 import com.awesomedialog.blennersilva.awesomedialoglibrary.AwesomeNoticeDialog
-import com.google.android.gms.ads.*
 import com.google.firebase.firestore.FirebaseFirestore
 import okhttp3.*
 import org.json.JSONException
@@ -40,11 +38,9 @@ class HomeActivity : AppCompatActivity() {
     private lateinit var mRecyclerView: RecyclerView
     private lateinit var mPhoneEt: EditText
     private lateinit var mPhoneLayout: LinearLayout
-    private lateinit var adRequest: AdRequest
 
     private lateinit var mStatus: TextView
 
-    private var interstitialAd: InterstitialAd? = null
     private lateinit var logStrings: ArrayList<String>
     private lateinit var tempStrings: ArrayList<String>
 
@@ -63,8 +59,6 @@ class HomeActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        MobileAds.initialize(this, "ca-app-pub-8086732239748075~8890173650")
 
         logStrings = ArrayList()
         mRecyclerView = findViewById(R.id.mainRecyclerView)
@@ -92,12 +86,6 @@ class HomeActivity : AppCompatActivity() {
 
         getLatestVersion()
 
-        adRequest = AdRequest.Builder().build()
-
-        Handler().postDelayed({
-            showAd()
-        }, 60000)
-
         AwesomeNoticeDialog(this)
                 .setTitle("Warning")
                 .setMessage("I(Developer of this app) is not responsible for any thing you did with this app. This app is only for prank. If you are not agree with my term and condition please don't use this app. In case you report my app or me i can take action to you.")
@@ -109,16 +97,6 @@ class HomeActivity : AppCompatActivity() {
                 .setButtonText(getString(R.string.dialog_ok_button))
                 .setNoticeButtonClick { }
                 .show()
-
-        val adView = findViewById<AdView>(R.id.mainBottomBannerAd)
-        val adRequest1 = AdRequest.Builder().build()
-        adView.loadAd(adRequest1)
-
-        MobileAds.initialize(this, "ca-app-pub-8086732239748075~8890173650")
-
-        interstitialAd = InterstitialAd(this)
-        interstitialAd!!.adUnitId = "ca-app-pub-8086732239748075/9598708915"
-        interstitialAd!!.loadAd(AdRequest.Builder().build())
 
         findViewById<View>(R.id.mainOkBtn).setOnClickListener(View.OnClickListener {
             mPhoneNumber = mPhoneEt.text.toString()
@@ -134,7 +112,6 @@ class HomeActivity : AppCompatActivity() {
                 Toast.makeText(this@HomeActivity, "Network", Toast.LENGTH_SHORT).show()
                 return@OnClickListener
             }
-            showAd()
 
             if (isDeveloperNumber(mPhoneNumber)) {
                 dataChange("Err: Bombing on creator of this app does not make sense.")
@@ -154,25 +131,6 @@ class HomeActivity : AppCompatActivity() {
             val intent = Intent(Intent.ACTION_PICK, ContactsContract.CommonDataKinds.Phone.CONTENT_URI)
             startActivityForResult(intent, REQUEST_CONTACT_NUMBER)
         })
-
-        interstitialAd!!.adListener = object : AdListener() {
-            override fun onAdLoaded() {
-                dataChange("Server up")
-            }
-
-            override fun onAdFailedToLoad(errorCode: Int) {
-                dataChange("Err: Errorcode : $errorCode")
-                interstitialAd!!.loadAd(adRequest)
-            }
-
-            override fun onAdOpened() {}
-            override fun onAdLeftApplication() {}
-
-            override fun onAdClosed() {
-                interstitialAd!!.loadAd(adRequest)
-            }
-        }
-
 
     }
 
@@ -365,8 +323,6 @@ class HomeActivity : AppCompatActivity() {
 
         if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_CONTACT_NUMBER) {
 
-            showAd()
-
             val uri = data!!.data
             @SuppressLint("Recycle")
             val cursor = contentResolver.query(uri!!, null, null, null, null)!!
@@ -406,18 +362,6 @@ class HomeActivity : AppCompatActivity() {
             helper.flipkart()
         }
 
-    }
-
-    private fun showAd() {
-        if (interstitialAd!!.isLoaded) {
-            interstitialAd!!.show()
-            interstitialAd!!.loadAd(adRequest)
-
-        } else {
-            dataChange("??? Wait for 10-15 second.")
-            interstitialAd!!.loadAd(adRequest)
-            return
-        }
     }
 
     fun dataChange(log: String) {
