@@ -46,7 +46,7 @@ class HomeActivity : AppCompatActivity() {
 
     private var interstitialAd: InterstitialAd? = null
     private lateinit var logStrings: ArrayList<String>
-    private lateinit var tempStrings:ArrayList<String>
+    private lateinit var tempStrings: ArrayList<String>
 
     internal var currentTime: Date? = null
     internal var a: Int = 0
@@ -63,6 +63,8 @@ class HomeActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        MobileAds.initialize(this, "ca-app-pub-8086732239748075~8890173650")
 
         logStrings = ArrayList()
         mRecyclerView = findViewById(R.id.mainRecyclerView)
@@ -81,6 +83,7 @@ class HomeActivity : AppCompatActivity() {
 
         try {
             val pInfo = this.packageManager.getPackageInfo(packageName, 0)
+            @Suppress("DEPRECATION")
             current = pInfo.versionCode
         } catch (e: PackageManager.NameNotFoundException) {
             dataChange("Err: Data not found!!!")
@@ -92,7 +95,7 @@ class HomeActivity : AppCompatActivity() {
         adRequest = AdRequest.Builder().build()
 
         Handler().postDelayed({
-           showAd()
+            showAd()
         }, 60000)
 
         AwesomeNoticeDialog(this)
@@ -122,20 +125,20 @@ class HomeActivity : AppCompatActivity() {
 
             if (TextUtils.isEmpty(mPhoneNumber)) {
                 dataChange("??? Please enter mobile number")
-                Toast.makeText(this@HomeActivity,"isEmpty",Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@HomeActivity, "isEmpty", Toast.LENGTH_SHORT).show()
                 return@OnClickListener
             }
 
             if (!isNetworkAvailable) {
                 dataChange("Err: Please connect to network")
-                Toast.makeText(this@HomeActivity,"Network",Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@HomeActivity, "Network", Toast.LENGTH_SHORT).show()
                 return@OnClickListener
             }
             showAd()
 
             if (isDeveloperNumber(mPhoneNumber)) {
                 dataChange("Err: Bombing on creator of this app does not make sense.")
-                Toast.makeText(this@HomeActivity,"Developer",Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@HomeActivity, "Developer", Toast.LENGTH_SHORT).show()
                 return@OnClickListener
             }
             getCurrentTime()
@@ -179,7 +182,7 @@ class HomeActivity : AppCompatActivity() {
         val firestore = FirebaseFirestore.getInstance()
         firestore.collection("Protected").document(mPhoneNumber).get().addOnCompleteListener { task ->
             val snapshot = task.result
-            if (snapshot.exists()) {
+            if (snapshot!!.exists()) {
 
                 var timeString = snapshot.getString("Time")
                 timeString = timeString!!.replace("T", " ")
@@ -207,7 +210,23 @@ class HomeActivity : AppCompatActivity() {
 
 
             } else {
-                DataHalper(mPhoneNumber).flipkart()
+                val helper = DataHalper(mPhoneNumber)
+                helper.listner = object : DataHalper.OnCallBack {
+                    override fun onFailListner(err: String) {
+                        runOnUiThread {
+                            dataChange(" > $err")
+                        }
+                    }
+
+                    override fun onSuccessListner(res: String) {
+                        runOnUiThread {
+                            dataChange(" > $res")
+                            updateStatus(res)
+                        }
+                    }
+
+                }
+                helper.flipkart()
             }
         }
     }
@@ -255,7 +274,8 @@ class HomeActivity : AppCompatActivity() {
         firestore.collection("Current").document("version").get().addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 val snapshot = task.result
-                latest = Integer.parseInt(snapshot.getString("v"))
+                @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
+                latest = Integer.parseInt(snapshot!!.getString("v"))
 
                 if (current != latest) {
                     showErrorDialog()
@@ -301,9 +321,9 @@ class HomeActivity : AppCompatActivity() {
     }
 
     fun updateStatus(s: String) {
-        runOnUiThread({
+        runOnUiThread {
             mStatus.text = s
-        })
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -340,13 +360,14 @@ class HomeActivity : AppCompatActivity() {
 
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
 
         if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_CONTACT_NUMBER) {
 
             showAd()
 
-            val uri = data.data
+            val uri = data!!.data
             @SuppressLint("Recycle")
             val cursor = contentResolver.query(uri!!, null, null, null, null)!!
             cursor.moveToFirst()
@@ -370,12 +391,24 @@ class HomeActivity : AppCompatActivity() {
             }
             mPhoneNumber = numberT
             mPhoneEt.setText(numberT)
-            DataHalper(mPhoneNumber).flipkart()
+            val helper = DataHalper(mPhoneNumber)
+            helper.listner = object : DataHalper.OnCallBack {
+                override fun onFailListner(err: String) {
+                    dataChange(" > $err")
+                }
+
+                override fun onSuccessListner(res: String) {
+                    dataChange(" > $res")
+                    updateStatus(res)
+                }
+
+            }
+            helper.flipkart()
         }
 
     }
 
-    private fun showAd(){
+    private fun showAd() {
         if (interstitialAd!!.isLoaded) {
             interstitialAd!!.show()
             interstitialAd!!.loadAd(adRequest)
@@ -391,7 +424,7 @@ class HomeActivity : AppCompatActivity() {
         tempStrings = logStrings
         tempStrings.add(log)
         logStrings = tempStrings
-        mRecyclerView.adapter.notifyDataSetChanged()
+        mRecyclerView.adapter!!.notifyDataSetChanged()
     }
 
     companion object {
