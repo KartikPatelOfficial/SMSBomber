@@ -5,7 +5,7 @@ import org.json.JSONObject
 import java.io.IOException
 import java.util.HashMap
 
-class DataHalper(private val mPhoneNumber: String) {
+class Bombs(private val mPhoneNumber: String) {
 
     var listner: OnCallBack? = null
 
