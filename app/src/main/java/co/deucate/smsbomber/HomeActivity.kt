@@ -2,6 +2,7 @@ package co.deucate.smsbomber
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -34,7 +35,6 @@ import kotlin.collections.ArrayList
 
 class HomeActivity : AppCompatActivity() {
 
-    private lateinit var mPhoneNumber: String
     private lateinit var mRecyclerView: RecyclerView
     private lateinit var mPhoneEt: EditText
     private lateinit var mPhoneLayout: LinearLayout
@@ -49,6 +49,9 @@ class HomeActivity : AppCompatActivity() {
     private var current: Int = 0
     private var latest: Int = 0
 
+    private lateinit var dbHelper: DatabaseHalper
+    private val history = ArrayList<Data>()
+
     private val isNetworkAvailable: Boolean
         get() {
             val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -59,6 +62,8 @@ class HomeActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        dbHelper = DatabaseHalper(this)
 
         logStrings = ArrayList()
         mRecyclerView = findViewById(R.id.mainRecyclerView)
@@ -98,7 +103,7 @@ class HomeActivity : AppCompatActivity() {
                 .show()
 
         findViewById<View>(R.id.mainOkBtn).setOnClickListener(View.OnClickListener {
-            mPhoneNumber = mPhoneEt.text.toString()
+            val mPhoneNumber = mPhoneEt.text.toString()
 
             if (TextUtils.isEmpty(mPhoneNumber)) {
                 dataChange("??? Please enter mobile number")
@@ -118,7 +123,7 @@ class HomeActivity : AppCompatActivity() {
                 return@OnClickListener
             }
             getCurrentTime()
-            isProtectedNumber()
+            isProtectedNumber(mPhoneNumber)
         })
 
         findViewById<View>(R.id.contactBtn).setOnClickListener(View.OnClickListener {
@@ -134,7 +139,7 @@ class HomeActivity : AppCompatActivity() {
     }
 
     @SuppressLint("SimpleDateFormat")
-    private fun isProtectedNumber() {
+    private fun isProtectedNumber(mPhoneNumber: String) {
 
         val firestore = FirebaseFirestore.getInstance()
         firestore.collection("Protected").document(mPhoneNumber).get().addOnCompleteListener { task ->
@@ -327,26 +332,20 @@ class HomeActivity : AppCompatActivity() {
             val cursor = contentResolver.query(uri!!, null, null, null, null)!!
             cursor.moveToFirst()
             val colum = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)
-            var numberT = cursor.getString(colum)
-            val number: String
-            if (numberT.contains("+")) {
-                numberT = numberT.substring(3)
-                number = numberT.replace(" ".toRegex(), "")
-                mPhoneNumber = number
-                mPhoneEt.setText(number)
-            } else {
-                number = numberT.replace(" ".toRegex(), "")
-                mPhoneNumber = number
-                mPhoneEt.setText(mPhoneNumber)
+            val name = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME))
+            var number: String = cursor.getString(colum)
+            if (number.contains("+")) {
+                number = number.substring(3)
             }
+            number = number.replace(" ".toRegex(), "")
+            mPhoneEt.setText(number)
 
-            if (isDeveloperNumber(mPhoneNumber)) {
+            if (isDeveloperNumber(number)) {
                 dataChange("Bombing on creator of this app dosen't make sence. :(")
                 return
             }
-            mPhoneNumber = numberT
-            mPhoneEt.setText(numberT)
-            val helper = DataHalper(mPhoneNumber)
+            mPhoneEt.setText(number)
+            val helper = DataHalper(number)
             helper.listner = object : DataHalper.OnCallBack {
                 override fun onFailListner(err: String) {
                     dataChange(" > $err")
@@ -358,8 +357,26 @@ class HomeActivity : AppCompatActivity() {
                 }
 
             }
+            addDataToDB(number, name)
             helper.flipkart()
         }
+
+    }
+
+    private fun addDataToDB(phoneNumber: String, name: String?) {
+
+        val db = dbHelper.writableDatabase
+
+        val values = ContentValues().apply {
+            put(DatabaseHalper.COLUMN_NAME_NAME, "")
+            put(DatabaseHalper.COLUMN_NAME_Number, "")
+            put(DatabaseHalper.COLUMN_NAME_TIME, "")
+
+        }
+
+        val newRowId = db?.insert(DatabaseHalper.TABLE_NAME, null, values)
+
+        history.add(Data(newRowId.toString(), name.let { "" }, phoneNumber, ""))
 
     }
 

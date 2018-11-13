@@ -1,17 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<com.google.android.material.card.MaterialCardView
+    android:layout_margin="4dp"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/recyclerTV"
-        android:text="> Hack"
-        android:textColor="@color/textPrimary"
-        android:textSize="16sp"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        tools:ignore="HardcodedText" />
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:padding="16dp">
 
-</LinearLayout>
+        <TextView
+            android:id="@+id/recyclerIndex"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="1."
+            android:textSize="22sp"
+            tools:ignore="HardcodedText" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/recyclerName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Kartik Patel"
+                android:textColor="@color/textPrimary"
+                android:textSize="18sp"
+                tools:ignore="HardcodedText" />
+
+            <TextView
+                android:id="@+id/recyclerDetail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="15/07/2018 - 5:12 (6352122123)"
+                android:textColor="@color/textSecondary"
+                tools:ignore="HardcodedText" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>
