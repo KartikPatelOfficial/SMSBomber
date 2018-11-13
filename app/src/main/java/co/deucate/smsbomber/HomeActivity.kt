@@ -90,10 +90,9 @@ class HomeActivity : AppCompatActivity() {
                 .setTitle("Warning")
                 .setMessage("I(Developer of this app) is not responsible for any thing you did with this app. This app is only for prank. If you are not agree with my term and condition please don't use this app. In case you report my app or me i can take action to you.")
                 .setColoredCircle(R.color.dialogWarningBackgroundColor)
-                .setDialogIconAndColor(R.drawable.ic_dialog_warning, R.color.white)
+                .setDialogIconAndColor(R.drawable.ic_dialog_warning, R.color.text_icon)
                 .setCancelable(true)
                 .setButtonText(getString(R.string.dialog_ok_button))
-                .setButtonBackgroundColor(R.color.dialogWarningBackgroundColor)
                 .setButtonText(getString(R.string.dialog_ok_button))
                 .setNoticeButtonClick { }
                 .show()
@@ -250,9 +249,9 @@ class HomeActivity : AppCompatActivity() {
                 .setTitle(R.string.app_name)
                 .setMessage("Your app is not up to date please update you app to get latest feature.")
                 .setColoredCircle(R.color.dialogErrorBackgroundColor)
-                .setDialogIconAndColor(R.drawable.ic_dialog_error, R.color.white)
+                .setDialogIconAndColor(R.drawable.ic_dialog_error, R.color.text_icon)
                 .setCancelable(true).setButtonText(getString(R.string.dialog_ok_button))
-                .setButtonBackgroundColor(R.color.dialogErrorBackgroundColor)
+                .setButtonBackgroundColor(R.color.text_icon)
                 .setButtonText(getString(R.string.dialog_ok_button))
                 .setErrorButtonClick {
                     val intent = Intent(Intent.ACTION_VIEW)

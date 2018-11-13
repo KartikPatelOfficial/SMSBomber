@@ -1,61 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:ads="http://schemas.android.com/apk/res-auto"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#000"
     android:orientation="vertical"
     tools:context="co.deucate.smsbomber.HomeActivity"
     tools:layout_editor_absoluteY="81dp">
 
     <LinearLayout
         android:id="@+id/linearLayout"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <EditText
             android:id="@+id/mainPhoneEt"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:backgroundTint="@color/green"
             android:hint="@string/phone_number"
+            android:importantForAutofill="no"
             android:inputType="phone"
-            android:textColor="@color/green"
-            android:textColorHint="@color/green"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:targetApi="o" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="4dp">
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/mainOkBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
                 android:layout_weight="1"
-                android:background="@drawable/round_bg"
+                android:elegantTextHeight="true"
+                android:elevation="4dp"
+                android:padding="8dp"
                 android:text="@string/start"
-                android:textColor="@color/green" />
+                android:textAlignment="center"
+                android:textColor="@color/text_icon"
+                app:rippleColor="@color/text_icon" />
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/contactBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
                 android:layout_weight="1"
-                android:background="@drawable/round_bg"
+                android:elegantTextHeight="true"
+                android:elevation="4dp"
+                android:padding="8dp"
                 android:text="@string/contacts"
-                android:textColor="@color/green" />
+                android:textAlignment="center"
+                android:textColor="@color/text_icon"
+                app:rippleColor="@color/text_icon" />
 
         </LinearLayout>
 
@@ -75,18 +82,43 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="@string/simply_close_the_app_if_you_want_to_stop_the_bombing"
-            android:textAlignment="center"
-            android:textColor="@color/red" />
+            android:textAlignment="center" />
 
     </LinearLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/mainRecyclerView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/linearLayout"
-        android:padding="16dp" />
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_alignParentBottom="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/mainRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="56dp" />
+
+        <com.google.android.material.bottomappbar.BottomAppBar
+            android:id="@+id/bottomBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:gravity="bottom" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_block_black_24dp"
+            android:tint="@color/text_icon"
+            app:layout_anchor="@id/bottomBar"
+            app:rippleColor="@color/text_icon" />
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

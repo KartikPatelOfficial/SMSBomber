@@ -8,7 +8,7 @@
     <TextView
         android:id="@+id/recyclerTV"
         android:text="> Hack"
-        android:textColor="@color/green"
+        android:textColor="@color/textPrimary"
         android:textSize="16sp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

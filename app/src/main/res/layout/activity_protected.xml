@@ -5,15 +5,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/black"
     tools:context=".ProtectedActivity">
 
     <LinearLayout
-        android:padding="16dp"
         android:id="@+id/linearLayout2"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:orientation="vertical"
+        android:padding="16dp"
         ads:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
@@ -22,11 +21,8 @@
             android:id="@+id/protectNumberET"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:backgroundTint="@color/green"
             android:hint="@string/number"
             android:inputType="phone"
-            android:textColor="@color/green"
-            android:textColorHint="@color/green"
             tools:ignore="LabelFor" />
 
         <Button
@@ -34,11 +30,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:background="@drawable/round_bg"
             android:paddingLeft="28dp"
             android:paddingRight="28dp"
-            android:text="Protect"
-            android:textColor="@color/green" />
+            android:text="Protect" />
 
     </LinearLayout>
 
