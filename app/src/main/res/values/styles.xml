@@ -12,6 +12,7 @@
         <item name="bottomAppBarStyle">@style/Widget.MaterialComponents.BottomAppBar.Colored</item>
         <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
 
+
     </style>
 
 </resources>

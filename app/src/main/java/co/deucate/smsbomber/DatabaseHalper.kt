@@ -30,6 +30,7 @@ class DatabaseHalper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         const val COLUMN_NAME_TIME = "Time"
 
         private const val SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS $TABLE_NAME"
+
         private const val SQL_CREATE_ENTRIES = "CREATE TABLE $TABLE_NAME (${BaseColumns._ID} INTEGER PRIMARY KEY," +
                 " $COLUMN_NAME_NAME TEXT," +
                 " $COLUMN_NAME_Number TEXT," +

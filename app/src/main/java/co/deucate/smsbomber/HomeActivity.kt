@@ -6,6 +6,7 @@ import android.app.AlertDialog
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
+import android.database.sqlite.SQLiteDatabase
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.PorterDuff
@@ -19,6 +20,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import android.text.TextUtils
+import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
@@ -63,8 +65,9 @@ class HomeActivity : AppCompatActivity() {
         window.statusBarColor = Color.WHITE
 
         dbHelper = DatabaseHalper(this)
+        val db = dbHelper.readableDatabase
 
-        getDataBase()
+        getDataBase(db)
 
         val simpleItemTouchCallback = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
 
@@ -88,11 +91,13 @@ class HomeActivity : AppCompatActivity() {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val position = viewHolder.adapterPosition
                 val removedItem = history[position]
+
+                db.execSQL("DELETE FROM ${DatabaseHalper.TABLE_NAME} WHERE ${BaseColumns._ID}=${history[position].index}")
                 history.removeAt(position)
                 adapter.notifyDataSetChanged()
 
                 val sandbar = Snackbar.make(findViewById(R.id.coordinator), "Deleted Successfully", Snackbar.LENGTH_LONG).setAction("UNDO") {
-                    history.add(position, removedItem)
+                    addDataToDB(removedItem.number,removedItem.name)
                     adapter.notifyDataSetChanged()
                     val sandbar1 = Snackbar.make(findViewById(R.id.coordinator), "Data is restored!", Snackbar.LENGTH_SHORT)
                     sandbar1.show()
@@ -152,7 +157,7 @@ class HomeActivity : AppCompatActivity() {
 
         AlertDialog.Builder(this)
                 .setTitle("Attention")
-                .setMessage("I(Developer of this app) is not responsible for any thing you did with this app. This app is only for prank. If you are not agree with my term and condition please don't use this app. In case you report my app or me i can take action to you.")
+                .setMessage(getString(R.string.warning))
                 .setPositiveButton("Ok") { _, _ -> }
                 .show()
 
@@ -206,9 +211,8 @@ class HomeActivity : AppCompatActivity() {
         super.onDestroy()
     }
 
-    private fun getDataBase() {
+    private fun getDataBase(db: SQLiteDatabase) {
 
-        val db = dbHelper.readableDatabase
         val projection = arrayOf(BaseColumns._ID, DatabaseHalper.COLUMN_NAME_NAME, DatabaseHalper.COLUMN_NAME_Number, DatabaseHalper.COLUMN_NAME_TIME)
         val cursor = db.query(DatabaseHalper.TABLE_NAME, projection, null, null, null, null, null)
 
@@ -405,7 +409,7 @@ class HomeActivity : AppCompatActivity() {
         }
 
         val calendar = Calendar.getInstance()
-        val motorman = SimpleDateFormat("dd/MM/yyyy HH:mm aa")
+        val motorman = SimpleDateFormat("dd/MM/yyyy hh:mm aa")
         val strDate = motorman.format(calendar.time)
 
         val values = ContentValues().apply {
@@ -417,7 +421,7 @@ class HomeActivity : AppCompatActivity() {
 
         val newRowId = db?.insert(DatabaseHalper.TABLE_NAME, null, values)
 
-        history.add(Data(newRowId.toString(), name!!, phoneNumber, ""))
+        history.add(Data(newRowId.toString(), name!!, phoneNumber, strDate))
         adapter.notifyDataSetChanged()
     }
 
