@@ -44,7 +44,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         val prefs = PreferenceManager.getDefaultSharedPreferences(context)
         prefs.edit().putBoolean("NIGHT_MODE", theme).apply()
         HomeActivity.isNightModeEnabled = theme
-        HomeActivity.receated = false
+        HomeActivity.recreated = false
         if (theme) {
             activity!!.setTheme(R.style.DarkMode)
         } else {

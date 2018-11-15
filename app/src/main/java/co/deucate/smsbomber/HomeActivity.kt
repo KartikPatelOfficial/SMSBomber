@@ -26,7 +26,6 @@ import android.view.View
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -66,9 +65,9 @@ class HomeActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
 
-        if (!receated) {
+        if (!recreated) {
             recreate()
-            receated = true
+            recreated = true
         }
     }
 
@@ -246,7 +245,9 @@ class HomeActivity : AppCompatActivity() {
 
         when (itemID) {
             R.id.menuSettings -> {
-                startActivity(Intent(this, SettingsActivity::class.java))
+                val intent = Intent(this, SettingsActivity::class.java)
+                intent.putExtra("NIGHT_MODE", isNightModeEnabled)
+                startActivity(intent)
             }
         }
 
@@ -468,7 +469,7 @@ class HomeActivity : AppCompatActivity() {
     }
 
     companion object {
-        var receated = false
+        var recreated = false
         var isNightModeEnabled: Boolean = false
         private const val REQUEST_CONTACT_NUMBER = 32
     }
