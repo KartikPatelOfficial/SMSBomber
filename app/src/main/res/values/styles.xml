@@ -1,17 +1,48 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
-        <!-- Customize your theme here. -->
+    <color name="lightBlack">#212121</color>
+
+    <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:textColorPrimary">@color/textPrimary</item>
-        <item name="android:textColorSecondary">@color/textSecondary</item>
+        <item name="android:textColorPrimary">#212121</item>
+        <item name="android:textColorSecondary">#757575</item>
+
+        <item name="preferenceTheme">@style/AppTheme.PrefrenceTheme</item>
+
+        <item name="primaryTextColor">#212121</item>
+        <item name="secondaryTextColor">#757575</item>
+
+        <item name="android:windowBackground">@android:color/white</item>
+
+        <item name="android:statusBarColor">#FFFFFF</item>
 
         <item name="bottomAppBarStyle">@style/Widget.MaterialComponents.BottomAppBar.Colored</item>
         <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
 
+    </style>
+
+    <style name="AppTheme.PrefrenceTheme" parent="PreferenceThemeOverlay.v14.Material">
+        <item name="android:colorAccent">@color/colorPrimary</item>
+    </style>
+
+    <style name="DarkMode" parent="Theme.AppCompat.NoActionBar">
+        <item name="colorAccent">@color/colorPrimary</item>
+
+        <item name="android:windowBackground">@color/lightBlack</item>
+
+        <item name="colorPrimary">#28292e</item>
+        <item name="colorPrimaryDark">#222222</item>
+        <item name="android:textColorPrimary">#FFFFFF</item>
+        <item name="android:textColorSecondary">#AAFFFFFF</item>
+
+        <item name="bottomAppBarStyle">@style/Widget.MaterialComponents.BottomAppBar.Colored</item>
+        <item name="android:statusBarColor">@color/lightBlack</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="m">false</item>
+
+        <item name="primaryTextColor">#FFFFFF</item>
+        <item name="secondaryTextColor">#AAFFFFFF</item>
 
     </style>
 

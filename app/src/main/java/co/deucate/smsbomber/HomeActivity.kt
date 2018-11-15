@@ -20,13 +20,17 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import android.text.TextUtils
-import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.ItemTouchHelper
+import co.deucate.smsbomber.settings.SettingsActivity
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.firestore.FirebaseFirestore
 import okhttp3.*
@@ -59,10 +63,29 @@ class HomeActivity : AppCompatActivity() {
             return activeNetworkInfo != null && activeNetworkInfo.isConnected
         }
 
+    override fun onResume() {
+        super.onResume()
+
+        if (!receated) {
+            recreate()
+            receated = true
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val mPrefs = PreferenceManager.getDefaultSharedPreferences(this)
+        isNightModeEnabled = mPrefs.getBoolean("NIGHT_MODE", false)
+
+        if (isNightModeEnabled) {
+            setTheme(R.style.DarkMode)
+        } else {
+            setTheme(R.style.AppTheme)
+        }
+
         setContentView(R.layout.activity_main)
-        window.statusBarColor = Color.WHITE
+        setSupportActionBar(findViewById(R.id.bottomBar))
 
         dbHelper = DatabaseHalper(this)
         val db = dbHelper.readableDatabase
@@ -97,7 +120,7 @@ class HomeActivity : AppCompatActivity() {
                 adapter.notifyDataSetChanged()
 
                 val sandbar = Snackbar.make(findViewById(R.id.coordinator), "Deleted Successfully", Snackbar.LENGTH_LONG).setAction("UNDO") {
-                    addDataToDB(removedItem.number,removedItem.name)
+                    addDataToDB(removedItem.number, removedItem.name)
                     adapter.notifyDataSetChanged()
                     val sandbar1 = Snackbar.make(findViewById(R.id.coordinator), "Data is restored!", Snackbar.LENGTH_SHORT)
                     sandbar1.show()
@@ -155,11 +178,12 @@ class HomeActivity : AppCompatActivity() {
             return
         }
 
-        AlertDialog.Builder(this)
-                .setTitle("Attention")
-                .setMessage(getString(R.string.warning))
-                .setPositiveButton("Ok") { _, _ -> }
-                .show()
+        //todo
+//        AlertDialog.Builder(this)
+//                .setTitle("Attention")
+//                .setMessage(getString(R.string.warning))
+//                .setPositiveButton("Ok") { _, _ -> }
+//                .show()
 
         findViewById<View>(R.id.mainOkBtn).setOnClickListener(View.OnClickListener {
             val mPhoneNumber = mPhoneEt.text.toString()
@@ -209,6 +233,24 @@ class HomeActivity : AppCompatActivity() {
     override fun onDestroy() {
         dbHelper.close()
         super.onDestroy()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.overflow, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+
+        val itemID = item!!.itemId
+
+        when (itemID) {
+            R.id.menuSettings -> {
+                startActivity(Intent(this, SettingsActivity::class.java))
+            }
+        }
+
+        return true
     }
 
     private fun getDataBase(db: SQLiteDatabase) {
@@ -426,6 +468,8 @@ class HomeActivity : AppCompatActivity() {
     }
 
     companion object {
+        var receated = false
+        var isNightModeEnabled: Boolean = false
         private const val REQUEST_CONTACT_NUMBER = 32
     }
 

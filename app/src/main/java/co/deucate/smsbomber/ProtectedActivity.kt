@@ -57,35 +57,6 @@ class ProtectedActivity : AppCompatActivity() {
 
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        val inflater = menuInflater
-        inflater.inflate(R.menu.overflow, menu)
-        return super.onCreateOptionsMenu(menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-
-        when (item.itemId) {
-
-            R.id.menuAbout -> {
-                Toast.makeText(this, "Created by spidy0471", Toast.LENGTH_SHORT).show()
-                return true
-            }
-
-            R.id.menuWeb -> {
-                val intent = Intent(Intent.ACTION_VIEW)
-                intent.data = Uri.parse("https://deucate.com/")
-                startActivity(intent)
-                return true
-            }
-
-            else -> {
-                return super.onOptionsItemSelected(item)
-            }
-        }
-
-    }
-
 
     @Throws(IOException::class)
     private fun startAddNumber() {

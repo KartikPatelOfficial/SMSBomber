@@ -15,8 +15,10 @@
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-8086732239748075~8890173650"/>
-        <activity android:name=".HomeActivity"
+            android:value="ca-app-pub-8086732239748075~8890173650" />
+
+        <activity
+            android:name=".HomeActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -24,8 +26,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ProtectedActivity"
-            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".ProtectedActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".settings.SettingsActivity"
+            android:label="@string/title_activity_settings" />
     </application>
 
 </manifest>
