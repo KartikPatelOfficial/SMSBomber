@@ -16,6 +16,7 @@ import android.net.ConnectivityManager
 import android.os.Bundle
 import android.provider.BaseColumns
 import android.provider.ContactsContract
+import android.text.SpannableStringBuilder
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -160,6 +161,33 @@ class HomeActivity : AppCompatActivity() {
         }
 
         val itemTouchHelper = ItemTouchHelper(simpleItemTouchCallback)
+
+        adapter.listner = object : Adapter.OnClickCallback {
+
+            override fun onClickCard(data: Data) {
+                AlertDialog.Builder(this@HomeActivity).setTitle("Warning!!!").setMessage("Are ou sure ou want to start bombing on ${data.number}?")
+                        .setPositiveButton("YES") { _, _ ->
+                            data.index = addDataToDB(data.number, data.name).toString()
+                            history.add(data)
+
+                            this@HomeActivity.mPhoneEt.text = SpannableStringBuilder.valueOf(data.number)
+
+                            val helper = Bombs(data.number)
+                            helper.listner = object : Bombs.OnCallBack {
+                                override fun onFailListner(err: String) {
+                                }
+
+                                override fun onSuccessListner(res: String) {
+                                    updateStatus(res)
+                                }
+
+                            }
+                            helper.flipkart()
+                            adapter.notifyDataSetChanged()
+
+                        }.setNegativeButton("NO") { _, _ -> }.show()
+            }
+        }
 
         mRecyclerView = findViewById(R.id.mainRecyclerView)
         mRecyclerView.layoutManager = LinearLayoutManager(this@HomeActivity)
@@ -444,7 +472,7 @@ class HomeActivity : AppCompatActivity() {
     }
 
     @SuppressLint("SimpleDateFormat")
-    private fun addDataToDB(phoneNumber: String, names: String?) {
+    private fun addDataToDB(phoneNumber: String, names: String?): Int {
         val db = dbHelper.writableDatabase
         var name = names
         if (names == null) {
@@ -466,6 +494,8 @@ class HomeActivity : AppCompatActivity() {
 
         history.add(Data(newRowId.toString(), name!!, phoneNumber, strDate))
         adapter.notifyDataSetChanged()
+
+        return newRowId!!.toInt()
     }
 
     companion object {
