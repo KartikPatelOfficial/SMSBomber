@@ -5,15 +5,32 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ProtectedActivity">
+    tools:context=".protect.ProtectedActivity">
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:paddingTop="32dp"
+        android:paddingBottom="16dp"
+        android:text="@string/protect"
+        android:textColor="?attr/primaryTextColor"
+        android:textSize="32sp"
+        android:typeface="sans"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
         android:id="@+id/linearLayout2"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:orientation="vertical"
         android:padding="16dp"
-        ads:layout_constraintTop_toTopOf="parent"
+        ads:layout_constraintHorizontal_bias="0.0"
+        ads:layout_constraintTop_toBottomOf="@+id/textView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
@@ -21,9 +38,11 @@
             android:id="@+id/protectNumberET"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:autofillHints="phone"
             android:hint="@string/number"
             android:inputType="phone"
-            tools:ignore="LabelFor" />
+            tools:ignore="LabelFor"
+            tools:targetApi="o" />
 
         <Button
             android:id="@+id/protectNumberBtn"
@@ -32,9 +51,20 @@
             android:layout_gravity="center"
             android:paddingLeft="28dp"
             android:paddingRight="28dp"
-            android:text="Protect" />
+            android:text="@string/ok" />
 
     </LinearLayout>
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:text="@string/protect_warning"
+        android:textColor="?attr/secondaryTextColor"
+        ads:layout_constraintBottom_toBottomOf="parent"
+        ads:layout_constraintEnd_toEndOf="parent"
+        ads:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

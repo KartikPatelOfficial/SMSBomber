@@ -1,14 +1,10 @@
-package co.deucate.smsbomber
+package co.deucate.smsbomber.protect
 
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import android.view.Menu
-import android.view.MenuItem
 import android.widget.Button
 import android.widget.EditText
-import android.widget.Toast
+import co.deucate.smsbomber.R
 
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -26,32 +22,23 @@ import okhttp3.Response
 
 class ProtectedActivity : AppCompatActivity() {
 
-    private lateinit var mEditText: EditText
-    private lateinit var mButton: Button
-    private lateinit var mNumber: String
-
-
-    private var isError = false
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (intent.getBooleanExtra("NIGHT_MODE", false)) {
+            setTheme(R.style.DarkMode)
+        } else {
+            setTheme(R.style.AppTheme)
+        }
         setContentView(R.layout.activity_protected)
 
-        mButton = findViewById(R.id.protectNumberBtn)
-        mButton.isEnabled = false
+        findViewById<Button>(R.id.protectNumberBtn).setOnClickListener {
 
-        mEditText = findViewById(R.id.protectNumberET)
+            val number = findViewById<EditText>(R.id.protectNumberET).text.toString()
 
-        mButton.setOnClickListener {
-            mNumber = mEditText.text.toString()
-
-            if (isError) {
-                try {
-                    startAddNumber()
-                } catch (e: IOException) {
-                    e.printStackTrace()
-                }
-
+            try {
+                startAddNumber(number)
+            } catch (e: IOException) {
+                e.printStackTrace()
             }
         }
 
@@ -59,7 +46,7 @@ class ProtectedActivity : AppCompatActivity() {
 
 
     @Throws(IOException::class)
-    private fun startAddNumber() {
+    private fun startAddNumber(mNumber: String) {
 
         val client = OkHttpClient()
         val request = Request.Builder().url("https://us-central1-smsbomber-e784b.cloudfunctions.net/Time").build()
@@ -70,8 +57,6 @@ class ProtectedActivity : AppCompatActivity() {
 
             @Throws(IOException::class)
             override fun onResponse(call: Call, response: Response) {
-
-
                 val jsonData = response.body()!!.string()
                 var data = HashMap<String, Any>()
 

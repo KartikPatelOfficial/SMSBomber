@@ -30,7 +30,9 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.ItemTouchHelper
+import co.deucate.smsbomber.protect.ProtectedActivity
 import co.deucate.smsbomber.settings.SettingsActivity
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.firestore.FirebaseFirestore
 import okhttp3.*
@@ -205,12 +207,24 @@ class HomeActivity : AppCompatActivity() {
             return
         }
 
-        //todo
-//        AlertDialog.Builder(this)
-//                .setTitle("Attention")
-//                .setMessage(getString(R.string.warning))
-//                .setPositiveButton("Ok") { _, _ -> }
-//                .show()
+        val isFirstTime = mPrefs.getBoolean("FIRST_TIME", true)
+
+        if (isFirstTime) {
+            AlertDialog.Builder(this)
+                    .setTitle("Attention")
+                    .setMessage(getString(R.string.warning))
+                    .setPositiveButton("Ok") { _, _ ->
+                        mPrefs.edit().putBoolean("FIRST_TIME", false).apply()
+                    }
+                    .show()
+        }
+
+        findViewById<FloatingActionButton>(R.id.fab).setOnClickListener {
+            val intent = Intent(this, ProtectedActivity::class.java)
+            intent.putExtra("NIGHT_MODE", isNightModeEnabled)
+            startActivity(intent)
+        }
+
 
         findViewById<View>(R.id.mainOkBtn).setOnClickListener(View.OnClickListener {
             val mPhoneNumber = mPhoneEt.text.toString()
@@ -380,10 +394,7 @@ class HomeActivity : AppCompatActivity() {
             @SuppressLint("SimpleDateFormat")
             @Throws(IOException::class)
             override fun onResponse(call: Call, response: Response) {
-
-
                 val jsonData = response.body()!!.string()
-
                 try {
                     val root = JSONObject(jsonData)
                     var timeString = root.getString("Time")
@@ -437,9 +448,9 @@ class HomeActivity : AppCompatActivity() {
             @SuppressLint("Recycle")
             val cursor = contentResolver.query(uri!!, null, null, null, null)!!
             cursor.moveToFirst()
-            val colum = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)
+            val column = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)
             val name = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME))
-            var number: String = cursor.getString(colum)
+            var number: String = cursor.getString(column)
             if (number.contains("+")) {
                 number = number.substring(3)
             }
