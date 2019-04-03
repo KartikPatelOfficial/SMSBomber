@@ -1,4 +1,4 @@
-package co.deucate.smsbomber.settings
+package co.deucate.smsbomber.ui.settings
 
 import android.os.Bundle
 import androidx.preference.PreferenceFragmentCompat

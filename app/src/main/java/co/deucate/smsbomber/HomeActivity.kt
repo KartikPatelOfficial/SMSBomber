@@ -30,8 +30,11 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.ItemTouchHelper
-import co.deucate.smsbomber.protect.ProtectedActivity
-import co.deucate.smsbomber.settings.SettingsActivity
+import co.deucate.smsbomber.core.Bombs
+import co.deucate.smsbomber.core.DatabaseHalper
+import co.deucate.smsbomber.model.History
+import co.deucate.smsbomber.ui.protect.ProtectedActivity
+import co.deucate.smsbomber.ui.settings.SettingsActivity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.firestore.FirebaseFirestore
@@ -54,7 +57,7 @@ class HomeActivity : AppCompatActivity() {
     internal var currentTime: Date? = null
 
     private lateinit var dbHelper: DatabaseHalper
-    private val history = ArrayList<Data>()
+    private val history = ArrayList<History>()
 
     val adapter = Adapter(history)
 
@@ -124,7 +127,7 @@ class HomeActivity : AppCompatActivity() {
                 val sandbar = Snackbar.make(findViewById(R.id.coordinator), "Deleted Successfully", Snackbar.LENGTH_LONG).setAction("UNDO") {
                     addDataToDB(removedItem.number, removedItem.name)
                     adapter.notifyDataSetChanged()
-                    val sandbar1 = Snackbar.make(findViewById(R.id.coordinator), "Data is restored!", Snackbar.LENGTH_SHORT)
+                    val sandbar1 = Snackbar.make(findViewById(R.id.coordinator), "History is restored!", Snackbar.LENGTH_SHORT)
                     sandbar1.show()
                 }
 
@@ -166,15 +169,15 @@ class HomeActivity : AppCompatActivity() {
 
         adapter.listner = object : Adapter.OnClickCallback {
 
-            override fun onClickCard(data: Data) {
-                AlertDialog.Builder(this@HomeActivity).setTitle("Warning!!!").setMessage("Are ou sure ou want to start bombing on ${data.number}?")
+            override fun onClickCard(history: History) {
+                AlertDialog.Builder(this@HomeActivity).setTitle("Warning!!!").setMessage("Are ou sure ou want to start bombing on ${history.number}?")
                         .setPositiveButton("YES") { _, _ ->
-                            data.index = addDataToDB(data.number, data.name).toString()
-                            history.add(data)
+                            history.index = addDataToDB(history.number, history.name)
+                            this@HomeActivity.history.add(history)
 
-                            this@HomeActivity.mPhoneEt.text = SpannableStringBuilder.valueOf(data.number)
+                            this@HomeActivity.mPhoneEt.text = SpannableStringBuilder.valueOf(history.number)
 
-                            val helper = Bombs(data.number)
+                            val helper = Bombs(history.number)
                             helper.listner = object : Bombs.OnCallBack {
                                 override fun onFailListner(err: String) {
                                 }
@@ -220,7 +223,7 @@ class HomeActivity : AppCompatActivity() {
         }
 
         findViewById<FloatingActionButton>(R.id.fab).setOnClickListener {
-            val intent = Intent(this, ProtectedActivity::class.java)
+            val intent = Intent(this, TestActivity::class.java)
             intent.putExtra("NIGHT_MODE", isNightModeEnabled)
             startActivity(intent)
         }
@@ -307,7 +310,7 @@ class HomeActivity : AppCompatActivity() {
                 val name = getString(getColumnIndexOrThrow(DatabaseHalper.COLUMN_NAME_NAME))
                 val time = getString(getColumnIndexOrThrow(DatabaseHalper.COLUMN_NAME_TIME))
                 val number = getString(getColumnIndexOrThrow(DatabaseHalper.COLUMN_NAME_Number))
-                history.add(Data(itemId.toString(), name, number, time))
+                history.add(History(itemId.toInt(), name, number, time))
             }
         }
         adapter.notifyDataSetChanged()
@@ -503,10 +506,10 @@ class HomeActivity : AppCompatActivity() {
 
         val newRowId = db?.insert(DatabaseHalper.TABLE_NAME, null, values)
 
-        history.add(Data(newRowId.toString(), name!!, phoneNumber, strDate))
+        history.add(History(newRowId!!.toInt(), name!!, phoneNumber, strDate))
         adapter.notifyDataSetChanged()
 
-        return newRowId!!.toInt()
+        return newRowId.toInt()
     }
 
     companion object {

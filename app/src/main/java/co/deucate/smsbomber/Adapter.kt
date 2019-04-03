@@ -6,10 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
+import co.deucate.smsbomber.model.History
 
 import java.util.ArrayList
 
-class Adapter(private var histories: ArrayList<Data>) : RecyclerView.Adapter<Adapter.ViewHolder>() {
+class Adapter(private var histories: ArrayList<History>) : RecyclerView.Adapter<Adapter.ViewHolder>() {
 
     var listner: OnClickCallback? = null
 
@@ -46,7 +47,7 @@ class Adapter(private var histories: ArrayList<Data>) : RecyclerView.Adapter<Ada
     }
 
     interface OnClickCallback {
-        fun onClickCard(data: Data)
+        fun onClickCard(history: History)
     }
 
 }

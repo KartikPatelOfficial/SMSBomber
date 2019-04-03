@@ -1,8 +1,7 @@
-package co.deucate.smsbomber.settings
+package co.deucate.smsbomber.ui.settings
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import co.deucate.smsbomber.R
 
 class SettingsActivity : AppCompatActivity() {

@@ -1,4 +1,4 @@
-package co.deucate.smsbomber.protect
+package co.deucate.smsbomber.ui.protect
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity

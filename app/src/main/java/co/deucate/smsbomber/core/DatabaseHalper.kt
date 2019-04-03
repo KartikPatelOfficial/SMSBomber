@@ -1,4 +1,4 @@
-package co.deucate.smsbomber
+package co.deucate.smsbomber.core
 
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
@@ -24,7 +24,7 @@ class DatabaseHalper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         const val DATABASE_VERSION = 1
         const val DATABASE_NAME = "History.db"
 
-        const val TABLE_NAME = "History"
+        const val TABLE_NAME = "Historya"
         const val COLUMN_NAME_NAME = "Name"
         const val COLUMN_NAME_Number = "Number"
         const val COLUMN_NAME_TIME = "Time"

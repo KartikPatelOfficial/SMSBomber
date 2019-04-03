@@ -1,6 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-
+apply plugin: 'kotlin-kapt'
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'kotlin-android-extensions'
 repositories {
@@ -34,8 +34,6 @@ configurations {
 }
 
 dependencies {
-    def koin_version = '2.0.0-rc-2'
-
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     //noinspection GradleCompatible
     implementation 'androidx.appcompat:appcompat:1.0.2'
@@ -54,10 +52,8 @@ dependencies {
     implementation 'com.android.support:preference-v7:28.0.0'
     implementation 'com.android.billingclient:billing:1.2'
 
-    // AndroidX (based on koin-android)
-// Koin AndroidX Scope feature
-    implementation "org.koin:koin-androidx-scope:$koin_version"
-// Koin AndroidX ViewModel feature
-    implementation "org.koin:koin-androidx-viewmodel:$koin_version"
+    implementation "android.arch.persistence.room:runtime:1.1.1"
+    kapt "android.arch.persistence.room:compiler:1.1.1"
+
 }
 

@@ -1,4 +1,4 @@
-package co.deucate.smsbomber
+package co.deucate.smsbomber.core
 
 import okhttp3.*
 import org.json.JSONObject
