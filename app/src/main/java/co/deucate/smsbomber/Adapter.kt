@@ -10,9 +10,8 @@ import co.deucate.smsbomber.model.History
 
 import java.util.ArrayList
 
-class Adapter(private var histories: ArrayList<History>) : RecyclerView.Adapter<Adapter.ViewHolder>() {
+class Adapter(private var histories: ArrayList<History>, private val onClickCard: (history: History) -> Unit) : RecyclerView.Adapter<Adapter.ViewHolder>() {
 
-    var listener: OnClickCallback? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.recyclerview_text, parent, false)
@@ -29,14 +28,12 @@ class Adapter(private var histories: ArrayList<History>) : RecyclerView.Adapter<
         holder.detailTV.text = data.time
 
         holder.cardView.setOnClickListener {
-            listener!!.onClickCard(data)
+            onClickCard(data)
         }
-
     }
 
-    override fun getItemCount(): Int {
-        return histories.size
-    }
+    override fun getItemCount(): Int = histories.size
+
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val cardView = itemView.findViewById<LinearLayout>(R.id.recyclerCard)!!
@@ -44,9 +41,4 @@ class Adapter(private var histories: ArrayList<History>) : RecyclerView.Adapter<
         val nameTv = itemView.findViewById<TextView>(R.id.recyclerName)!!
         val detailTV = itemView.findViewById<TextView>(R.id.recyclerDetail)!!
     }
-
-    interface OnClickCallback {
-        fun onClickCard(history: History)
-    }
-
 }
