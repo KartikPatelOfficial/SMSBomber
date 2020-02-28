@@ -28,11 +28,11 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
-import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import co.deucate.smsbomber.core.Bombs
 import co.deucate.smsbomber.core.DatabaseHelper
 import co.deucate.smsbomber.model.History
+import co.deucate.smsbomber.ui.protect.ProtectedActivity
 import co.deucate.smsbomber.ui.settings.SettingsActivity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
@@ -68,27 +68,8 @@ class HomeActivity : AppCompatActivity() {
             return activeNetworkInfo != null && activeNetworkInfo.isConnected
         }
 
-    override fun onResume() {
-        super.onResume()
-
-        if (!recreated) {
-            recreate()
-            recreated = true
-        }
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        val mPrefs = PreferenceManager.getDefaultSharedPreferences(this)
-        isNightModeEnabled = mPrefs.getBoolean("NIGHT_MODE", false)
-
-        if (isNightModeEnabled) {
-            setTheme(R.style.DarkMode)
-        } else {
-            setTheme(R.style.AppTheme)
-        }
-
         setContentView(R.layout.activity_main)
         setSupportActionBar(findViewById(R.id.bottomBar))
 
@@ -210,22 +191,16 @@ class HomeActivity : AppCompatActivity() {
             return
         }
 
-        val isFirstTime = mPrefs.getBoolean("FIRST_TIME", true)
-
-        if (isFirstTime) {
             AlertDialog.Builder(this)
                     .setTitle("Attention")
                     .setMessage(getString(R.string.warning))
                     .setPositiveButton("Ok") { _, _ ->
-                        mPrefs.edit().putBoolean("FIRST_TIME", false).apply()
                     }
                     .show()
-        }
+
 
         findViewById<FloatingActionButton>(R.id.fab).setOnClickListener {
-            val intent = Intent(this, TestActivity::class.java)
-            intent.putExtra("NIGHT_MODE", isNightModeEnabled)
-            startActivity(intent)
+            startActivity(Intent(this, ProtectedActivity::class.java))
         }
 
 
@@ -288,9 +263,7 @@ class HomeActivity : AppCompatActivity() {
 
         when (item!!.itemId) {
             R.id.menuSettings -> {
-                val intent = Intent(this, SettingsActivity::class.java)
-                intent.putExtra("NIGHT_MODE", isNightModeEnabled)
-                startActivity(intent)
+                startActivity(Intent(this, SettingsActivity::class.java))
             }
         }
 
@@ -317,7 +290,6 @@ class HomeActivity : AppCompatActivity() {
 
     @SuppressLint("SimpleDateFormat")
     private fun isProtectedNumber(mPhoneNumber: String) {
-
         val firestore = FirebaseFirestore.getInstance()
         firestore.collection("Protected").document(mPhoneNumber).get().addOnCompleteListener { task ->
             val snapshot = task.result
@@ -510,8 +482,6 @@ class HomeActivity : AppCompatActivity() {
     }
 
     companion object {
-        var recreated = false
-        var isNightModeEnabled: Boolean = false
         private const val REQUEST_CONTACT_NUMBER = 32
     }
 

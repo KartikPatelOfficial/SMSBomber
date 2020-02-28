@@ -16,24 +16,4 @@
         <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
     </style>
 
-
-    <style name="DarkMode" parent="Theme.AppCompat.NoActionBar">
-        <item name="colorAccent">@color/colorPrimary</item>
-
-        <item name="android:windowBackground">@color/lightBlack</item>
-
-        <item name="colorPrimary">#28292e</item>
-        <item name="colorPrimaryDark">#222222</item>
-        <item name="android:textColorPrimary">#FFFFFF</item>
-        <item name="android:textColorSecondary">#AAFFFFFF</item>
-
-        <item name="bottomAppBarStyle">@style/Widget.MaterialComponents.BottomAppBar.Colored</item>
-        <item name="android:statusBarColor">@color/lightBlack</item>
-        <item name="android:windowLightStatusBar" tools:targetApi="m">false</item>
-
-        <item name="primaryTextColor">#FFFFFF</item>
-        <item name="secondaryTextColor">#AAFFFFFF</item>
-
-    </style>
-
 </resources>

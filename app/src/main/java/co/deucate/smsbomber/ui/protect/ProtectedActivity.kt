@@ -24,30 +24,21 @@ class ProtectedActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (intent.getBooleanExtra("NIGHT_MODE", false)) {
-            setTheme(R.style.DarkMode)
-        } else {
-            setTheme(R.style.AppTheme)
-        }
         setContentView(R.layout.activity_protected)
 
         findViewById<Button>(R.id.protectNumberBtn).setOnClickListener {
-
             val number = findViewById<EditText>(R.id.protectNumberET).text.toString()
-
             try {
                 startAddNumber(number)
             } catch (e: IOException) {
                 e.printStackTrace()
             }
         }
-
     }
 
 
     @Throws(IOException::class)
     private fun startAddNumber(mNumber: String) {
-
         val client = OkHttpClient()
         val request = Request.Builder().url("https://us-central1-smsbomber-e784b.cloudfunctions.net/Time").build()
 
