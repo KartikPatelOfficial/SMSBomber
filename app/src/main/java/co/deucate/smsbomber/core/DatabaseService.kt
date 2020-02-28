@@ -1,11 +1,10 @@
-package co.deucate.smsbomber
+package co.deucate.smsbomber.core
 
 import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.provider.BaseColumns
-import co.deucate.smsbomber.core.DatabaseHelper
 import co.deucate.smsbomber.model.History
 import java.text.SimpleDateFormat
 import java.util.*

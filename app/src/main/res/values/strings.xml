@@ -4,6 +4,12 @@
   <string name="please_enter_your_mobile_number">Please enter your mobile number</string>
   <string name="phone_number">Phone Number</string>
 
+  <string name="APP_ID">ca-app-pub-8086732239748075~8890173650</string>
+  <string name="BannerID">ca-app-pub-8086732239748075/8334198206</string>
+  <string name="TestBannerID">ca-app-pub-3940256099942544/6300978111</string>
+  <string name="InterstitialID">ca-app-pub-8086732239748075/9598708915</string>
+  <string name="RewardedID">ca-app-pub-8086732239748075/3514535960</string>
+
   <string name="start">Start</string>
   <string name="simply_close_the_app_if_you_want_to_stop_the_bombing">Simply close the app if you want to stop the bombing.</string>
   <string name="mobile_number">Mobile Number</string>

@@ -18,6 +18,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import android.text.TextUtils
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -25,9 +26,13 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import co.deucate.smsbomber.core.Bombs
+import co.deucate.smsbomber.core.DatabaseService
 import co.deucate.smsbomber.model.History
 import co.deucate.smsbomber.ui.protect.ProtectedActivity
 import co.deucate.smsbomber.ui.settings.SettingsActivity
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.InterstitialAd
+import com.google.android.gms.ads.MobileAds
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main.*
@@ -40,6 +45,7 @@ class HomeActivity : AppCompatActivity() {
     private val histories = ArrayList<History>()
 
     private lateinit var adapter: Adapter
+    private lateinit var mInterstitialAd: InterstitialAd
 
     companion object {
         private const val REQUEST_CONTACT_NUMBER = 32
@@ -57,6 +63,13 @@ class HomeActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(findViewById(R.id.bottomBar))
         databaseService = DatabaseService(this)
+        MobileAds.initialize(this) {}
+
+        val adRequest = AdRequest.Builder().build()
+        adView.loadAd(adRequest)
+        mInterstitialAd = InterstitialAd(this)
+        mInterstitialAd.adUnitId = "ca-app-pub-3940256099942544/1033173712"
+        mInterstitialAd.loadAd(AdRequest.Builder().build())
 
         adapter = Adapter(histories) { history ->
             AlertDialog.Builder(this@HomeActivity).setTitle("Warning!!!").setMessage("Are ou sure ou want to start bombing on ${history.number}?")
@@ -112,7 +125,7 @@ class HomeActivity : AppCompatActivity() {
                         .show()
                 return@OnClickListener
             }
-            startBombing(mPhoneNumber,null)
+            startBombing(mPhoneNumber, null)
         })
 
         findViewById<View>(R.id.contactBtn).setOnClickListener(View.OnClickListener {
@@ -219,15 +232,20 @@ class HomeActivity : AppCompatActivity() {
     }
 
     @SuppressLint("SimpleDateFormat")
-    private fun startBombing(phoneNumber: String, name:String?) {
-        Bombs(phoneNumber){ isSuccess, message ->
-            if (isSuccess){
+    private fun startBombing(phoneNumber: String, name: String?) {
+        Bombs(phoneNumber) { isSuccess, message ->
+            if (isSuccess) {
                 runOnUiThread {
                     updateStatus(message)
                 }
             }
         }
         addDataToDB(phoneNumber, name)
+        if (mInterstitialAd.isLoaded) {
+            mInterstitialAd.show()
+        } else {
+            Log.d("TAG", "The interstitial wasn't loaded yet.")
+        }
     }
 
     private fun isDeveloperNumber(phoneNumber: String): Boolean {
@@ -275,7 +293,7 @@ class HomeActivity : AppCompatActivity() {
                 return
             }
             mainPhoneEt.setText(number)
-            startBombing(number,name)
+            startBombing(number, name)
         }
     }
 
