@@ -16,7 +16,6 @@
         android:paddingTop="32dp"
         android:paddingBottom="16dp"
         android:text="@string/app_name"
-        android:textColor="?attr/primaryTextColor"
         android:textSize="32sp"
         android:typeface="sans"
         app:layout_constraintEnd_toEndOf="parent"
@@ -34,7 +33,6 @@
         app:layout_constraintTop_toBottomOf="@+id/textView">
 
         <EditText
-            android:textColorHint="?attr/secondaryTextColor"
             android:id="@+id/mainPhoneEt"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -92,7 +90,6 @@
             android:layout_gravity="center"
             android:text="STATUS"
             android:textAlignment="center"
-            android:textColor="?attr/secondaryTextColor"
             tools:ignore="HardcodedText" />
 
         <TextView
@@ -100,8 +97,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="@string/simply_close_the_app_if_you_want_to_stop_the_bombing"
-            android:textAlignment="center"
-            android:textColor="?attr/secondaryTextColor" />
+            android:textAlignment="center" />
 
     </LinearLayout>
 
@@ -124,6 +120,7 @@
 
         <com.google.android.material.bottomappbar.BottomAppBar
             android:id="@+id/bottomBar"
+            style="@style/Widget.MaterialComponents.BottomAppBar.Colored"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
@@ -134,11 +131,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_verified_user_black_24dp"
-            android:tint="@color/text_icon"
-            app:layout_anchor="@id/bottomBar"
-            app:rippleColor="@color/text_icon" />
+            app:layout_anchor="@id/bottomBar" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -2,29 +2,16 @@
 
     <color name="lightBlack">#212121</color>
 
-    <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
+    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:textColorPrimary">#212121</item>
-        <item name="android:textColorSecondary">#757575</item>
-
-        <item name="preferenceTheme">@style/AppTheme.PrefrenceTheme</item>
-
-        <item name="primaryTextColor">#212121</item>
-        <item name="secondaryTextColor">#757575</item>
+        <item name="android:navigationBarColor">@color/colorPrimary</item>
 
         <item name="android:windowBackground">@android:color/white</item>
-
         <item name="android:statusBarColor">#FFFFFF</item>
 
-        <item name="bottomAppBarStyle">@style/Widget.MaterialComponents.BottomAppBar.Colored</item>
         <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
-
-    </style>
-
-    <style name="AppTheme.PrefrenceTheme" parent="PreferenceThemeOverlay.v14.Material">
-        <item name="android:colorAccent">@color/colorPrimary</item>
     </style>
 
     <style name="DarkMode" parent="Theme.AppCompat.NoActionBar">

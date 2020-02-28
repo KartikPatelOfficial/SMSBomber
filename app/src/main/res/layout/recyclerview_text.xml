@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView
+<androidx.cardview.widget.CardView
     android:layout_margin="4dp"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
@@ -34,7 +34,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Kartik Patel"
-                android:textColor="?attr/primaryTextColor"
                 android:textSize="18sp"
                 tools:ignore="HardcodedText" />
 
@@ -43,11 +42,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="15/07/2018 - 5:12 (6352122123)"
-                android:textColor="?attr/secondaryTextColor"
                 tools:ignore="HardcodedText" />
 
         </LinearLayout>
 
     </LinearLayout>
 
-</com.google.android.material.card.MaterialCardView>
+</androidx.cardview.widget.CardView>
