@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.preference.PreferenceManager
+import androidx.preference.SwitchPreferenceCompat
 import co.deucate.smsbomber.HomeActivity
 
 
@@ -18,17 +19,15 @@ class SettingsFragment : PreferenceFragmentCompat() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        val darkModeSwitch = preferenceManager.findPreference<SwitchPreferenceCompat>("darkMode")
 
-        val darkModeSwitch = preferenceManager.findPreference("darkMode")
-
-        if (darkModeSwitch.isEnabled) {
+        if (darkModeSwitch!!.isEnabled) {
             activity!!.setTheme(R.style.DarkMode)
         } else {
             activity!!.setTheme(R.style.AppTheme)
         }
 
         darkModeSwitch.setOnPreferenceChangeListener { _, newValue ->
-
             if (newValue as Boolean) {
                 setTheme(activity!!, true)
             } else {

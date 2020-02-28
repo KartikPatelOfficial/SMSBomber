@@ -31,9 +31,8 @@ import androidx.core.content.ContextCompat
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import co.deucate.smsbomber.core.Bombs
-import co.deucate.smsbomber.core.DatabaseHalper
+import co.deucate.smsbomber.core.DatabaseHelper
 import co.deucate.smsbomber.model.History
-import co.deucate.smsbomber.ui.protect.ProtectedActivity
 import co.deucate.smsbomber.ui.settings.SettingsActivity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
@@ -56,7 +55,7 @@ class HomeActivity : AppCompatActivity() {
 
     internal var currentTime: Date? = null
 
-    private lateinit var dbHelper: DatabaseHalper
+    private lateinit var dbHelper: DatabaseHelper
     private val history = ArrayList<History>()
 
     val adapter = Adapter(history)
@@ -92,7 +91,7 @@ class HomeActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(findViewById(R.id.bottomBar))
 
-        dbHelper = DatabaseHalper(this)
+        dbHelper = DatabaseHelper(this)
         val db = dbHelper.readableDatabase
 
         getDataBase(db)
@@ -120,7 +119,7 @@ class HomeActivity : AppCompatActivity() {
                 val position = viewHolder.adapterPosition
                 val removedItem = history[position]
 
-                db.execSQL("DELETE FROM ${DatabaseHalper.TABLE_NAME} WHERE ${BaseColumns._ID}=${history[position].index}")
+                db.execSQL("DELETE FROM ${DatabaseHelper.TABLE_NAME} WHERE ${BaseColumns._ID}=${history[position].index}")
                 history.removeAt(position)
                 adapter.notifyDataSetChanged()
 
@@ -167,7 +166,7 @@ class HomeActivity : AppCompatActivity() {
 
         val itemTouchHelper = ItemTouchHelper(simpleItemTouchCallback)
 
-        adapter.listner = object : Adapter.OnClickCallback {
+        adapter.listener = object : Adapter.OnClickCallback {
 
             override fun onClickCard(history: History) {
                 AlertDialog.Builder(this@HomeActivity).setTitle("Warning!!!").setMessage("Are ou sure ou want to start bombing on ${history.number}?")
@@ -178,11 +177,11 @@ class HomeActivity : AppCompatActivity() {
                             this@HomeActivity.mPhoneEt.text = SpannableStringBuilder.valueOf(history.number)
 
                             val helper = Bombs(history.number)
-                            helper.listner = object : Bombs.OnCallBack {
-                                override fun onFailListner(err: String) {
+                            helper.listener = object : Bombs.OnCallBack {
+                                override fun onFailListener(err: String) {
                                 }
 
-                                override fun onSuccessListner(res: String) {
+                                override fun onSuccessListener(res: String) {
                                     updateStatus(res)
                                 }
 
@@ -301,15 +300,15 @@ class HomeActivity : AppCompatActivity() {
 
     private fun getDataBase(db: SQLiteDatabase) {
 
-        val projection = arrayOf(BaseColumns._ID, DatabaseHalper.COLUMN_NAME_NAME, DatabaseHalper.COLUMN_NAME_Number, DatabaseHalper.COLUMN_NAME_TIME)
-        val cursor = db.query(DatabaseHalper.TABLE_NAME, projection, null, null, null, null, null)
+        val projection = arrayOf(BaseColumns._ID, DatabaseHelper.COLUMN_NAME_NAME, DatabaseHelper.COLUMN_NAME_Number, DatabaseHelper.COLUMN_NAME_TIME)
+        val cursor = db.query(DatabaseHelper.TABLE_NAME, projection, null, null, null, null, null)
 
         with(cursor) {
             while (moveToNext()) {
                 val itemId = getLong(getColumnIndexOrThrow(BaseColumns._ID))
-                val name = getString(getColumnIndexOrThrow(DatabaseHalper.COLUMN_NAME_NAME))
-                val time = getString(getColumnIndexOrThrow(DatabaseHalper.COLUMN_NAME_TIME))
-                val number = getString(getColumnIndexOrThrow(DatabaseHalper.COLUMN_NAME_Number))
+                val name = getString(getColumnIndexOrThrow(DatabaseHelper.COLUMN_NAME_NAME))
+                val time = getString(getColumnIndexOrThrow(DatabaseHelper.COLUMN_NAME_TIME))
+                val number = getString(getColumnIndexOrThrow(DatabaseHelper.COLUMN_NAME_Number))
                 history.add(History(itemId.toInt(), name, number, time))
             }
         }
@@ -340,11 +339,11 @@ class HomeActivity : AppCompatActivity() {
 
                     if (hours >= 3) {
                         val helper = Bombs(mPhoneNumber)
-                        helper.listner = object : Bombs.OnCallBack {
-                            override fun onFailListner(err: String) {
+                        helper.listener = object : Bombs.OnCallBack {
+                            override fun onFailListener(err: String) {
                             }
 
-                            override fun onSuccessListner(res: String) {
+                            override fun onSuccessListener(res: String) {
                                 updateStatus(res)
                             }
 
@@ -367,13 +366,13 @@ class HomeActivity : AppCompatActivity() {
 
             } else {
                 val helper = Bombs(mPhoneNumber)
-                helper.listner = object : Bombs.OnCallBack {
-                    override fun onFailListner(err: String) {
+                helper.listener = object : Bombs.OnCallBack {
+                    override fun onFailListener(err: String) {
                         runOnUiThread {
                         }
                     }
 
-                    override fun onSuccessListner(res: String) {
+                    override fun onSuccessListener(res: String) {
                         runOnUiThread {
                             updateStatus(res)
                         }
@@ -470,11 +469,11 @@ class HomeActivity : AppCompatActivity() {
             }
             mPhoneEt.setText(number)
             val helper = Bombs(number)
-            helper.listner = object : Bombs.OnCallBack {
-                override fun onFailListner(err: String) {
+            helper.listener = object : Bombs.OnCallBack {
+                override fun onFailListener(err: String) {
                 }
 
-                override fun onSuccessListner(res: String) {
+                override fun onSuccessListener(res: String) {
                     updateStatus(res)
                 }
 
@@ -498,13 +497,13 @@ class HomeActivity : AppCompatActivity() {
         val strDate = motorman.format(calendar.time)
 
         val values = ContentValues().apply {
-            put(DatabaseHalper.COLUMN_NAME_NAME, name)
-            put(DatabaseHalper.COLUMN_NAME_Number, phoneNumber)
-            put(DatabaseHalper.COLUMN_NAME_TIME, strDate)
+            put(DatabaseHelper.COLUMN_NAME_NAME, name)
+            put(DatabaseHelper.COLUMN_NAME_Number, phoneNumber)
+            put(DatabaseHelper.COLUMN_NAME_TIME, strDate)
 
         }
 
-        val newRowId = db?.insert(DatabaseHalper.TABLE_NAME, null, values)
+        val newRowId = db?.insert(DatabaseHelper.TABLE_NAME, null, values)
 
         history.add(History(newRowId!!.toInt(), name!!, phoneNumber, strDate))
         adapter.notifyDataSetChanged()

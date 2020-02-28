@@ -5,7 +5,7 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.provider.BaseColumns
 
-class DatabaseHalper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
+class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
     override fun onCreate(db: SQLiteDatabase) {
         db.execSQL(SQL_CREATE_ENTRIES)
@@ -24,7 +24,7 @@ class DatabaseHalper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         const val DATABASE_VERSION = 1
         const val DATABASE_NAME = "History.db"
 
-        const val TABLE_NAME = "Historya"
+        const val TABLE_NAME = "History"
         const val COLUMN_NAME_NAME = "Name"
         const val COLUMN_NAME_Number = "Number"
         const val COLUMN_NAME_TIME = "Time"

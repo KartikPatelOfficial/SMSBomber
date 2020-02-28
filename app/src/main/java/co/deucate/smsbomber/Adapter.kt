@@ -12,14 +12,14 @@ import java.util.ArrayList
 
 class Adapter(private var histories: ArrayList<History>) : RecyclerView.Adapter<Adapter.ViewHolder>() {
 
-    var listner: OnClickCallback? = null
+    var listener: OnClickCallback? = null
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Adapter.ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.recyclerview_text, parent, false)
         return ViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: Adapter.ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
         val data = histories[position]
 
@@ -30,7 +30,7 @@ class Adapter(private var histories: ArrayList<History>) : RecyclerView.Adapter<
         holder.detailTV.text = data.time
 
         holder.cardView.setOnClickListener {
-            listner!!.onClickCard(data)
+            listener!!.onClickCard(data)
         }
 
     }

@@ -8,11 +8,11 @@ repositories {
 }
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
     defaultConfig {
         applicationId "co.deucate.smsbomber"
         minSdkVersion 21
-        targetSdkVersion 28
+        targetSdkVersion 29
         versionCode 5
         versionName "2.0.0"
     }
@@ -28,32 +28,30 @@ android {
     }
 }
 
-configurations {
-    cleanedAnnotations
-    compile.exclude group: 'org.jetbrains', module: 'annotations'
-}
+//configurations {
+//    cleanedAnnotations
+//    compile.exclude group: 'org.jetbrains', module: 'annotations'
+//}
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     //noinspection GradleCompatible
-    implementation 'androidx.appcompat:appcompat:1.0.2'
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.0-alpha3'
-    implementation 'androidx.recyclerview:recyclerview:1.0.0'
-    implementation 'com.android.support:design:28.0.0'
-    implementation 'com.google.firebase:firebase-auth:16.2.0'
-    implementation 'com.google.firebase:firebase-core:16.0.8'
-    implementation 'com.google.firebase:firebase-firestore:18.2.0'
-    implementation 'com.afollestad:ason:1.4.16'
-    implementation 'com.afollestad:bridge:5.1.2'
-    implementation 'com.squareup.okhttp3:okhttp:3.12.0'
-    implementation 'com.google.android.material:material:1.0.0'
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.0-beta4'
+    implementation 'androidx.recyclerview:recyclerview:1.1.0'
+    implementation 'com.google.firebase:firebase-auth:19.2.0'
+    implementation 'com.google.firebase:firebase-core:17.2.2'
+    implementation 'com.google.firebase:firebase-firestore:21.4.0'
+    implementation 'com.squareup.okhttp3:okhttp:3.12.8'
+    implementation 'com.google.android.material:material:1.1.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'com.android.support:preference-v7:28.0.0'
-    implementation 'com.android.billingclient:billing:1.2'
+    implementation 'androidx.preference:preference-ktx:1.1.0'
+    implementation 'com.android.billingclient:billing:2.1.0'
 
-    implementation "android.arch.persistence.room:runtime:1.1.1"
-    kapt "android.arch.persistence.room:compiler:1.1.1"
+    implementation "androidx.room:room-runtime:2.2.4"
+    implementation "androidx.room:room-ktx:2.2.4"
+    kapt "androidx.room:room-compiler:2.2.4"
 
 }
 
