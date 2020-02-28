@@ -12,6 +12,7 @@
         <item name="android:statusBarColor">#FFFFFF</item>
 
         <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="p">false</item>
 
         <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
     </style>

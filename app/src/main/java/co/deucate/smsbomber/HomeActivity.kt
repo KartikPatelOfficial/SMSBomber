@@ -3,10 +3,8 @@ package co.deucate.smsbomber
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
-import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
-import android.database.sqlite.SQLiteDatabase
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.PorterDuff
@@ -14,7 +12,6 @@ import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.net.ConnectivityManager
 import android.os.Bundle
-import android.provider.BaseColumns
 import android.provider.ContactsContract
 import android.text.SpannableStringBuilder
 import androidx.appcompat.app.AppCompatActivity
@@ -24,19 +21,17 @@ import android.text.TextUtils
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.EditText
-import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import co.deucate.smsbomber.core.Bombs
-import co.deucate.smsbomber.core.DatabaseHelper
 import co.deucate.smsbomber.model.History
 import co.deucate.smsbomber.ui.protect.ProtectedActivity
 import co.deucate.smsbomber.ui.settings.SettingsActivity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.android.synthetic.main.activity_main.*
 import okhttp3.*
 import org.json.JSONException
 import org.json.JSONObject
@@ -49,17 +44,12 @@ import kotlin.math.roundToInt
 
 class HomeActivity : AppCompatActivity() {
 
-    private lateinit var mRecyclerView: RecyclerView
-    private lateinit var mPhoneEt: EditText
-
-    private lateinit var mStatus: TextView
-
     internal var currentTime: Date? = null
 
-    private lateinit var dbHelper: DatabaseHelper
-    private val history = ArrayList<History>()
+    private lateinit var databaseService: DatabaseService
+    private val histories = ArrayList<History>()
 
-    val adapter = Adapter(history)
+    val adapter = Adapter(histories)
 
     private val isNetworkAvailable: Boolean
         get() {
@@ -73,10 +63,13 @@ class HomeActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(findViewById(R.id.bottomBar))
 
-        dbHelper = DatabaseHelper(this)
-        val db = dbHelper.readableDatabase
+        databaseService = DatabaseService(this)
 
-        getDataBase(db)
+        databaseService.getHistories {
+            histories.clear()
+            histories.addAll(it)
+            adapter.notifyDataSetChanged()
+        }
 
         val simpleItemTouchCallback = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
 
@@ -99,10 +92,10 @@ class HomeActivity : AppCompatActivity() {
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val position = viewHolder.adapterPosition
-                val removedItem = history[position]
+                val removedItem = histories[position]
 
-                db.execSQL("DELETE FROM ${DatabaseHelper.TABLE_NAME} WHERE ${BaseColumns._ID}=${history[position].index}")
-                history.removeAt(position)
+                databaseService.deleteFromHistory(histories[position].index)
+                histories.removeAt(position)
                 adapter.notifyDataSetChanged()
 
                 val sandbar = Snackbar.make(findViewById(R.id.coordinator), "Deleted Successfully", Snackbar.LENGTH_LONG).setAction("UNDO") {
@@ -153,10 +146,10 @@ class HomeActivity : AppCompatActivity() {
             override fun onClickCard(history: History) {
                 AlertDialog.Builder(this@HomeActivity).setTitle("Warning!!!").setMessage("Are ou sure ou want to start bombing on ${history.number}?")
                         .setPositiveButton("YES") { _, _ ->
-                            history.index = addDataToDB(history.number, history.name)
-                            this@HomeActivity.history.add(history)
+                            addDataToDB(history.number, history.name)
+                            this@HomeActivity.histories.add(history)
 
-                            this@HomeActivity.mPhoneEt.text = SpannableStringBuilder.valueOf(history.number)
+                            this@HomeActivity.mainPhoneEt.text = SpannableStringBuilder.valueOf(history.number)
 
                             val helper = Bombs(history.number)
                             helper.listener = object : Bombs.OnCallBack {
@@ -175,12 +168,9 @@ class HomeActivity : AppCompatActivity() {
             }
         }
 
-        mRecyclerView = findViewById(R.id.mainRecyclerView)
-        mRecyclerView.layoutManager = LinearLayoutManager(this@HomeActivity)
-        mRecyclerView.adapter = adapter
-        itemTouchHelper.attachToRecyclerView(mRecyclerView)
-        mPhoneEt = findViewById(R.id.mainPhoneEt)
-        mStatus = findViewById(R.id.mainStatus)
+        mainRecyclerView.layoutManager = LinearLayoutManager(this@HomeActivity)
+        mainRecyclerView.adapter = adapter
+        itemTouchHelper.attachToRecyclerView(mainRecyclerView)
 
         if (!isNetworkAvailable) {
             AlertDialog.Builder(this)
@@ -191,12 +181,12 @@ class HomeActivity : AppCompatActivity() {
             return
         }
 
-            AlertDialog.Builder(this)
-                    .setTitle("Attention")
-                    .setMessage(getString(R.string.warning))
-                    .setPositiveButton("Ok") { _, _ ->
-                    }
-                    .show()
+        AlertDialog.Builder(this)
+                .setTitle("Attention")
+                .setMessage(getString(R.string.warning))
+                .setPositiveButton("Ok") { _, _ ->
+                }
+                .show()
 
 
         findViewById<FloatingActionButton>(R.id.fab).setOnClickListener {
@@ -205,10 +195,10 @@ class HomeActivity : AppCompatActivity() {
 
 
         findViewById<View>(R.id.mainOkBtn).setOnClickListener(View.OnClickListener {
-            val mPhoneNumber = mPhoneEt.text.toString()
+            val mPhoneNumber = mainPhoneEt.text.toString()
 
             if (TextUtils.isEmpty(mPhoneNumber)) {
-                mPhoneEt.error = "Please enter mobile number"
+                mainPhoneEt.error = "Please enter mobile number"
                 return@OnClickListener
             }
 
@@ -249,43 +239,18 @@ class HomeActivity : AppCompatActivity() {
 
     }
 
-    override fun onDestroy() {
-        dbHelper.close()
-        super.onDestroy()
-    }
-
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.overflow, menu)
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-
         when (item!!.itemId) {
             R.id.menuSettings -> {
                 startActivity(Intent(this, SettingsActivity::class.java))
             }
         }
-
         return true
-    }
-
-    private fun getDataBase(db: SQLiteDatabase) {
-
-        val projection = arrayOf(BaseColumns._ID, DatabaseHelper.COLUMN_NAME_NAME, DatabaseHelper.COLUMN_NAME_Number, DatabaseHelper.COLUMN_NAME_TIME)
-        val cursor = db.query(DatabaseHelper.TABLE_NAME, projection, null, null, null, null, null)
-
-        with(cursor) {
-            while (moveToNext()) {
-                val itemId = getLong(getColumnIndexOrThrow(BaseColumns._ID))
-                val name = getString(getColumnIndexOrThrow(DatabaseHelper.COLUMN_NAME_NAME))
-                val time = getString(getColumnIndexOrThrow(DatabaseHelper.COLUMN_NAME_TIME))
-                val number = getString(getColumnIndexOrThrow(DatabaseHelper.COLUMN_NAME_Number))
-                history.add(History(itemId.toInt(), name, number, time))
-            }
-        }
-        adapter.notifyDataSetChanged()
-
     }
 
     @SuppressLint("SimpleDateFormat")
@@ -407,7 +372,7 @@ class HomeActivity : AppCompatActivity() {
 
     fun updateStatus(s: String) {
         runOnUiThread {
-            mStatus.text = s
+            mainStatus.text = s
         }
     }
 
@@ -421,13 +386,12 @@ class HomeActivity : AppCompatActivity() {
             val cursor = contentResolver.query(uri!!, null, null, null, null)!!
             cursor.moveToFirst()
             val column = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)
-            val name = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME))
             var number: String = cursor.getString(column)
             if (number.contains("+")) {
                 number = number.substring(3)
             }
             number = number.replace(" ".toRegex(), "")
-            mPhoneEt.setText(number)
+            mainPhoneEt.setText(number)
 
             if (isDeveloperNumber(number)) {
                 AlertDialog.Builder(this)
@@ -437,7 +401,7 @@ class HomeActivity : AppCompatActivity() {
                         .show()
                 return
             }
-            mPhoneEt.setText(number)
+            mainPhoneEt.setText(number)
             val helper = Bombs(number)
             helper.listener = object : Bombs.OnCallBack {
                 override fun onFailListener(err: String) {
@@ -446,39 +410,17 @@ class HomeActivity : AppCompatActivity() {
                 override fun onSuccessListener(res: String) {
                     updateStatus(res)
                 }
-
             }
-            addDataToDB(number, name)
             helper.flipkart()
         }
 
     }
 
-    @SuppressLint("SimpleDateFormat")
-    private fun addDataToDB(phoneNumber: String, names: String?): Int {
-        val db = dbHelper.writableDatabase
-        var name = names
-        if (names == null) {
-            name = "Unknown"
+    fun addDataToDB(number: String, name: String?) {
+        databaseService.addDataToDB(number, name) {
+            histories.add(it)
+            adapter.notifyDataSetChanged()
         }
-
-        val calendar = Calendar.getInstance()
-        val motorman = SimpleDateFormat("dd/MM/yyyy hh:mm aa")
-        val strDate = motorman.format(calendar.time)
-
-        val values = ContentValues().apply {
-            put(DatabaseHelper.COLUMN_NAME_NAME, name)
-            put(DatabaseHelper.COLUMN_NAME_Number, phoneNumber)
-            put(DatabaseHelper.COLUMN_NAME_TIME, strDate)
-
-        }
-
-        val newRowId = db?.insert(DatabaseHelper.TABLE_NAME, null, values)
-
-        history.add(History(newRowId!!.toInt(), name!!, phoneNumber, strDate))
-        adapter.notifyDataSetChanged()
-
-        return newRowId.toInt()
     }
 
     companion object {
