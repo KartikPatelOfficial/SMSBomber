@@ -20,7 +20,6 @@ class Adapter(private var histories: ArrayList<History>) : RecyclerView.Adapter<
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-
         val data = histories[position]
 
         val title = "${data.name} (${data.number})"

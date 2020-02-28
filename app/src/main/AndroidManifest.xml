@@ -11,9 +11,6 @@
     android:supportsRtl="true"
     android:theme="@style/AppTheme"
     tools:ignore="AllowBackup,GoogleAppIndexingWarning">
-
-    <activity android:name=".TestActivity"/>
-
     <activity
       android:name=".HomeActivity"
       android:screenOrientation="portrait"

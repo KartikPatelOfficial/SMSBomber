@@ -11,7 +11,6 @@ import androidx.preference.PreferenceManager
 import androidx.preference.SwitchPreferenceCompat
 import co.deucate.smsbomber.HomeActivity
 
-
 class SettingsFragment : PreferenceFragmentCompat() {
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
@@ -20,19 +19,10 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val darkModeSwitch = preferenceManager.findPreference<SwitchPreferenceCompat>("darkMode")
-
-        if (darkModeSwitch!!.isEnabled) {
-            activity!!.setTheme(R.style.DarkMode)
-        } else {
-            activity!!.setTheme(R.style.AppTheme)
-        }
+        activity!!.setTheme(if (darkModeSwitch!!.isEnabled) R.style.DarkMode else R.style.AppTheme)
 
         darkModeSwitch.setOnPreferenceChangeListener { _, newValue ->
-            if (newValue as Boolean) {
-                setTheme(activity!!, true)
-            } else {
-                setTheme(activity!!, false)
-            }
+            setTheme(activity!!, newValue as Boolean)
             true
         }
 
@@ -44,11 +34,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         prefs.edit().putBoolean("NIGHT_MODE", theme).apply()
         HomeActivity.isNightModeEnabled = theme
         HomeActivity.recreated = false
-        if (theme) {
-            activity!!.setTheme(R.style.DarkMode)
-        } else {
-            activity!!.setTheme(R.style.AppTheme)
-        }
+        activity!!.setTheme(if (theme) R.style.DarkMode else R.style.AppTheme)
     }
 
 }

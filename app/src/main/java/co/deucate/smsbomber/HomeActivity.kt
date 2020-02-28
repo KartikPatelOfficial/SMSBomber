@@ -45,6 +45,7 @@ import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.math.roundToInt
 
 class HomeActivity : AppCompatActivity() {
 
@@ -158,7 +159,7 @@ class HomeActivity : AppCompatActivity() {
                     xMarkLeft = itemView.left + xMarkMargin
                     xMarkRight = itemView.left + xMarkMargin + 100
                 }
-                xMark!!.setBounds(xMarkLeft - 40, xMarkTop + 50, xMarkRight - 50, xMarkBottom - 50)
+                xMark!!.setBounds(xMarkLeft - (itemView.height / 2.5).roundToInt(), xMarkTop + 50, xMarkRight - 50, xMarkBottom - 50)
                 xMark!!.draw(c)
             }
 
@@ -285,9 +286,7 @@ class HomeActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
 
-        val itemID = item!!.itemId
-
-        when (itemID) {
+        when (item!!.itemId) {
             R.id.menuSettings -> {
                 val intent = Intent(this, SettingsActivity::class.java)
                 intent.putExtra("NIGHT_MODE", isNightModeEnabled)
@@ -325,8 +324,7 @@ class HomeActivity : AppCompatActivity() {
             if (snapshot!!.exists()) {
 
                 var timeString = snapshot.getString("Time")
-                timeString = timeString!!.replace("T", " ")
-                timeString = timeString.replace("Z", " ")
+                timeString = timeString!!.replace("T", " ").replace("Z", " ")
                 val dateFormat2 = SimpleDateFormat("yyyy-MM-dd HH:mm:SS.SSS")
 
                 try {
@@ -423,7 +421,7 @@ class HomeActivity : AppCompatActivity() {
 
         mainPhoneNumber = mainPhoneNumber.replace(" ", "")
         val number = mainPhoneNumber.toCharArray()
-        val myNumber = "9664769226".toCharArray()
+        val myNumber = "6352122123".toCharArray()
 
 
         for (i in 0..9) {
