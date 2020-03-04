@@ -29,7 +29,7 @@ import co.deucate.smsbomber.core.Bombs
 import co.deucate.smsbomber.core.DatabaseService
 import co.deucate.smsbomber.model.History
 import co.deucate.smsbomber.service.ProtectedNumberService
-import co.deucate.smsbomber.ui.protect.ProtectedActivity
+import co.deucate.smsbomber.ui.ProtectedActivity
 import co.deucate.smsbomber.ui.settings.SettingsActivity
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.InterstitialAd

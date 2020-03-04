@@ -21,6 +21,11 @@
             app:summary="2.0.0"
             app:title="Version" />
 
+        <Preference
+            app:key="developer_name"
+            app:summary="Kartik Patel"
+            app:title="Developer Name" />
+
     </PreferenceCategory>
 
 </androidx.preference.PreferenceScreen>

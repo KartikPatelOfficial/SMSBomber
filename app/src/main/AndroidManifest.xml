@@ -25,8 +25,9 @@
       </intent-filter>
     </activity>
     <activity
-      android:name=".ui.protect.ProtectedActivity"
-      android:screenOrientation="fullSensor"/>
+      android:name=".ui.ProtectedActivity"
+      android:screenOrientation="portrait"
+        tools:ignore="LockedOrientationActivity" />
     <activity
       android:label="@string/title_activity_settings"
       android:name=".ui.settings.SettingsActivity"/>
