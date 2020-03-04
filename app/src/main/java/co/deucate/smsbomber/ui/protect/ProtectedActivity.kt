@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.widget.Button
 import android.widget.EditText
 import co.deucate.smsbomber.R
+import co.deucate.smsbomber.service.ProtectedNumberService
 
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -22,51 +23,16 @@ import okhttp3.Response
 
 class ProtectedActivity : AppCompatActivity() {
 
+    private val protectedNumberService = ProtectedNumberService()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_protected)
 
         findViewById<Button>(R.id.protectNumberBtn).setOnClickListener {
-            val number = findViewById<EditText>(R.id.protectNumberET).text.toString()
-            try {
-                startAddNumber(number)
-            } catch (e: IOException) {
-                e.printStackTrace()
-            }
+            val number = findViewById<EditText>(R.id.protectNumberET).text.toString().replace(" ", "").replace("+91", "")
+            protectedNumberService.addProtectedNumber(number)
         }
     }
 
-
-    @Throws(IOException::class)
-    private fun startAddNumber(mNumber: String) {
-        val client = OkHttpClient()
-        val request = Request.Builder().url("https://us-central1-smsbomber-e784b.cloudfunctions.net/Time").build()
-
-        val call = client.newCall(request)
-        call.enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {}
-
-            @Throws(IOException::class)
-            override fun onResponse(call: Call, response: Response) {
-                val jsonData = response.body()!!.string()
-                var data = HashMap<String, Any>()
-
-                try {
-                    val root = JSONObject(jsonData)
-                    val time = root.get("Time")
-                    val temp = HashMap<String, Any>()
-                    temp["Time"] = time
-                    data = temp
-                } catch (e: JSONException) {
-                    e.printStackTrace()
-                }
-
-                val firestore = FirebaseFirestore.getInstance()
-                firestore.collection("Protected").document(mNumber).set(data).addOnCompleteListener { }
-
-            }
-        })
-
-
-    }
 }

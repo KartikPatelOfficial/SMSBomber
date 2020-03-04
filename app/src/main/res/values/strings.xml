@@ -23,5 +23,6 @@
   <string name="server">Server Bomb</string>
   <string name="title_activity_settings">Settings</string>
   <string name="protect_warning">Attacker can not send sms from this app but he/she can send with other app.</string>
+    <string name="name">Name</string>
 
 </resources>

@@ -28,6 +28,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import co.deucate.smsbomber.core.Bombs
 import co.deucate.smsbomber.core.DatabaseService
 import co.deucate.smsbomber.model.History
+import co.deucate.smsbomber.service.ProtectedNumberService
 import co.deucate.smsbomber.ui.protect.ProtectedActivity
 import co.deucate.smsbomber.ui.settings.SettingsActivity
 import com.google.android.gms.ads.AdRequest
@@ -46,6 +47,8 @@ class HomeActivity : AppCompatActivity() {
 
     private lateinit var adapter: Adapter
     private lateinit var mInterstitialAd: InterstitialAd
+
+    private val protectedService = ProtectedNumberService()
 
     companion object {
         private const val REQUEST_CONTACT_NUMBER = 32
@@ -68,7 +71,7 @@ class HomeActivity : AppCompatActivity() {
         val adRequest = AdRequest.Builder().build()
         adView.loadAd(adRequest)
         mInterstitialAd = InterstitialAd(this)
-        mInterstitialAd.adUnitId = "ca-app-pub-3940256099942544/1033173712"
+        mInterstitialAd.adUnitId = resources.getString(R.string.InterstitialID)
         mInterstitialAd.loadAd(AdRequest.Builder().build())
 
         adapter = Adapter(histories) { history ->
@@ -76,7 +79,7 @@ class HomeActivity : AppCompatActivity() {
                     .setPositiveButton("YES") { _, _ ->
                         this@HomeActivity.mainPhoneEt.text = SpannableStringBuilder.valueOf(history.number)
 
-                        startBombing(history.number, history.name)
+                        protectedNumber(history.number, history.name)
                         adapter.notifyDataSetChanged()
 
                     }.setNegativeButton("NO") { _, _ -> }.show()
@@ -125,7 +128,7 @@ class HomeActivity : AppCompatActivity() {
                         .show()
                 return@OnClickListener
             }
-            startBombing(mPhoneNumber, null)
+            protectedNumber(mPhoneNumber, null)
         })
 
         findViewById<View>(R.id.contactBtn).setOnClickListener(View.OnClickListener {
@@ -232,6 +235,18 @@ class HomeActivity : AppCompatActivity() {
     }
 
     @SuppressLint("SimpleDateFormat")
+    private fun protectedNumber(phoneNumber: String, name: String?) {
+        protectedService.isProtectedNumber(phoneNumber) {
+            if (it) {
+                runOnUiThread {
+                    AlertDialog.Builder(this).setTitle("Error").setMessage("This number is protected. Please try again after some time.").setPositiveButton("Ok") { _, _ -> }.show()
+                }
+            } else {
+                startBombing(phoneNumber, name)
+            }
+        }
+    }
+
     private fun startBombing(phoneNumber: String, name: String?) {
         Bombs(phoneNumber) { isSuccess, message ->
             if (isSuccess) {
@@ -293,7 +308,7 @@ class HomeActivity : AppCompatActivity() {
                 return
             }
             mainPhoneEt.setText(number)
-            startBombing(number, name)
+            protectedNumber(number, name)
         }
     }
 

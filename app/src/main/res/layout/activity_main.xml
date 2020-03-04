@@ -104,7 +104,7 @@
             android:layout_marginTop="8dp"
             android:layout_height="wrap_content"
             ads:adSize="SMART_BANNER"
-            ads:adUnitId="@string/TestBannerID" />
+            ads:adUnitId="@string/BannerID" />
     </LinearLayout>
 
 
