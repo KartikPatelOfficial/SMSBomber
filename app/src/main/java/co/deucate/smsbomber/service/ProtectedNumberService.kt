@@ -6,10 +6,10 @@ import java.util.*
 
 class ProtectedNumberService {
 
-    val firestore = FirebaseFirestore.getInstance()
+    private val db = FirebaseFirestore.getInstance()
 
     fun isProtectedNumber(number: String, complition: (Boolean) -> Unit) {
-        firestore.collection("Protected").document(number).get().addOnCompleteListener {
+        db.collection("Protected").document(number).get().addOnCompleteListener {
             val documentSnapshot = it.result
             if (documentSnapshot != null && documentSnapshot.exists()) {
                 val protectedTime = documentSnapshot.getTimestamp("time")
@@ -28,7 +28,7 @@ class ProtectedNumberService {
     fun addProtectedNumber(number: String) {
         val data = HashMap<String, Any>()
         data["time"] = Timestamp.now()
-        firestore.collection("Protected").document(number).set(data)
+        db.collection("Protected").document(number).set(data)
     }
 
 }

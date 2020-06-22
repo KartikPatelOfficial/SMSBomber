@@ -28,9 +28,9 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import co.deucate.smsbomber.core.Bombs
 import co.deucate.smsbomber.core.DatabaseService
 import co.deucate.smsbomber.model.History
-import co.deucate.smsbomber.service.ProtectedNumberService
 import co.deucate.smsbomber.ui.ProtectedActivity
 import co.deucate.smsbomber.ui.settings.SettingsActivity
+import co.deucate.smsbomber.utility.Validator
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.InterstitialAd
 import com.google.android.gms.ads.MobileAds
@@ -48,8 +48,6 @@ class HomeActivity : AppCompatActivity() {
     private lateinit var adapter: Adapter
     private lateinit var mInterstitialAd: InterstitialAd
 
-    private val protectedService = ProtectedNumberService()
-
     companion object {
         private const val REQUEST_CONTACT_NUMBER = 32
     }
@@ -66,7 +64,7 @@ class HomeActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(findViewById(R.id.bottomBar))
         databaseService = DatabaseService(this)
-        MobileAds.initialize(this) {}
+        MobileAds.initialize(this)
 
         val adRequest = AdRequest.Builder().build()
         adView.loadAd(adRequest)
@@ -78,8 +76,7 @@ class HomeActivity : AppCompatActivity() {
             AlertDialog.Builder(this@HomeActivity).setTitle("Warning!!!").setMessage("Are ou sure ou want to start bombing on ${history.number}?")
                     .setPositiveButton("YES") { _, _ ->
                         this@HomeActivity.mainPhoneEt.text = SpannableStringBuilder.valueOf(history.number)
-
-                        protectedNumber(history.number, history.name)
+                        startBombing(history.number, history.name)
                         adapter.notifyDataSetChanged()
 
                     }.setNegativeButton("NO") { _, _ -> }.show()
@@ -112,28 +109,16 @@ class HomeActivity : AppCompatActivity() {
 
         findViewById<View>(R.id.mainOkBtn).setOnClickListener(View.OnClickListener {
             val mPhoneNumber = mainPhoneEt.text.toString()
-
             if (TextUtils.isEmpty(mPhoneNumber)) {
                 mainPhoneEt.error = "Please enter mobile number"
                 return@OnClickListener
             }
-
-            if (checkNetwork()) return@OnClickListener
-
-            if (isDeveloperNumber(mPhoneNumber)) {
-                AlertDialog.Builder(this)
-                        .setTitle("Error")
-                        .setMessage("Bombing on developer of this app does not make sense... Logic Level 999999")
-                        .setPositiveButton("Ok") { _, _ -> }
-                        .show()
-                return@OnClickListener
-            }
-            protectedNumber(mPhoneNumber, null)
+            startBombing(mPhoneNumber)
+            return@OnClickListener
         })
 
         findViewById<View>(R.id.contactBtn).setOnClickListener(View.OnClickListener {
             if (checkNetwork()) return@OnClickListener
-
             val intent = Intent(Intent.ACTION_PICK, ContactsContract.CommonDataKinds.Phone.CONTENT_URI)
             startActivityForResult(intent, REQUEST_CONTACT_NUMBER)
         })
@@ -234,20 +219,17 @@ class HomeActivity : AppCompatActivity() {
         return true
     }
 
-    @SuppressLint("SimpleDateFormat")
-    private fun protectedNumber(phoneNumber: String, name: String?) {
-        protectedService.isProtectedNumber(phoneNumber) {
-            if (it) {
-                runOnUiThread {
-                    AlertDialog.Builder(this).setTitle("Error").setMessage("This number is protected. Please try again after some time.").setPositiveButton("Ok") { _, _ -> }.show()
-                }
-            } else {
-                startBombing(phoneNumber, name)
-            }
-        }
-    }
+    private fun startBombing(phoneNumber: String, name: String? = null) {
+        val validationError = Validator(phoneNumber).validate()
 
-    private fun startBombing(phoneNumber: String, name: String?) {
+        if (validationError != null) {
+            AlertDialog.Builder(this)
+                    .setTitle("Error")
+                    .setMessage(validationError)
+                    .setPositiveButton("Ok") { _, _ -> }
+                    .show()
+            return
+        }
         Bombs(phoneNumber) { isSuccess, message ->
             if (isSuccess) {
                 runOnUiThread {
@@ -261,19 +243,6 @@ class HomeActivity : AppCompatActivity() {
         } else {
             Log.d("TAG", "The interstitial wasn't loaded yet.")
         }
-    }
-
-    private fun isDeveloperNumber(phoneNumber: String): Boolean {
-        val mainPhoneNumber = phoneNumber.replace(" ", "")
-        val number = mainPhoneNumber.toCharArray()
-        val myNumber = "6352122123".toCharArray()
-
-        for (i in 0..9) {
-            if (number[i] != myNumber[i]) {
-                return false
-            }
-        }
-        return true
     }
 
     private fun updateStatus(currentStatus: String) {
@@ -291,28 +260,13 @@ class HomeActivity : AppCompatActivity() {
             val cursor = contentResolver.query(data!!.data!!, null, null, null, null)!!
             cursor.moveToFirst()
             val column = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)
-            var number: String = cursor.getString(column)
+            val number: String = cursor.getString(column)
             val name = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME))
-            if (number.contains("+")) {
-                number = number.substring(3)
-            }
-            number = number.replace(" ".toRegex(), "")
-            mainPhoneEt.setText(number)
-
-            if (isDeveloperNumber(number)) {
-                AlertDialog.Builder(this)
-                        .setTitle("Error")
-                        .setMessage("Bombing on creator of this app dosen't make sence. :(")
-                        .setPositiveButton("Ok") { _, _ -> }
-                        .show()
-                return
-            }
-            mainPhoneEt.setText(number)
-            protectedNumber(number, name)
+            startBombing(number, name)
         }
     }
 
-    fun addDataToDB(number: String, name: String?) {
+    private fun addDataToDB(number: String, name: String?) {
         databaseService.addDataToDB(number, name) {
             histories.add(it)
             adapter.notifyDataSetChanged()

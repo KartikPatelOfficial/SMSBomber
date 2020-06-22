@@ -2,6 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Projects-SMSBomber.iml" filepath="$PROJECT_DIR$/.idea/modules/Projects-SMSBomber.iml" group="SMSBomber" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/Projects-SMSBomber-app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/Projects-SMSBomber-app.iml" group="SMSBomber/app" />
       <module fileurl="file://$PROJECT_DIR$/.idea/SMSBomber.iml" filepath="$PROJECT_DIR$/.idea/SMSBomber.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/SMSBomber-app.iml" filepath="$PROJECT_DIR$/app/SMSBomber-app.iml" group="SMSBomber/app" />
       <module fileurl="file://$PROJECT_DIR$/StudioProjects-SMSBomber.iml" filepath="$PROJECT_DIR$/StudioProjects-SMSBomber.iml" group="SMSBomber" />
